@@ -1,5 +1,5 @@
+import 'package:ai_pc_builder_project/presentation/screens/home/home_screen.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ai_pc_builder_project/presentation/screens/home/homeScreen.dart';
 import 'package:ai_pc_builder_project/presentation/screens/links/links.dart';
 import 'package:ai_pc_builder_project/presentation/screens/components/components.dart';
 
