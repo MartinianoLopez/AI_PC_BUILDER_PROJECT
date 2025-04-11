@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:ai_pc_builder_project/core/app_router.dart'; 
 
 void main() {
   runApp(const MainApp());
@@ -9,13 +11,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!, edu paso por aqui!!!'),
-        ),
-      ),
+    return MaterialApp.router(
+      routerConfig: appRouter,
     );
   }
-  
 }
