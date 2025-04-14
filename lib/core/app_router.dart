@@ -1,6 +1,6 @@
+import 'package:ai_pc_builder_project/presentation/screens/components/components_links.dart';
 import 'package:ai_pc_builder_project/presentation/screens/home/home_screen.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ai_pc_builder_project/presentation/screens/links/links.dart';
 import 'package:ai_pc_builder_project/presentation/screens/components/components.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -10,8 +10,8 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
-      path: '/links',
-      builder: (context, state) => const Links(),
+      path: '/ComponentsLinks',
+      builder: (context, state) => const ComponentsLinks(),
     ),
     GoRoute(
       path: '/components',

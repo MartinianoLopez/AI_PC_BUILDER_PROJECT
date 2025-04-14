@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     TextEditingController inputBudget = TextEditingController();
 
   void generateConfiguration(int inputBudget, BuildContext context){
-    context.go('/components', extra: inputBudget);
+    context.push('/components', extra: inputBudget);
   }
 
     return Scaffold(
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.link),
               title: const Text('Links'),
-              onTap: () => context.go('/links'),
+              onTap: () => context.go('/ComponentsLinks'),
             ),
             ListTile(
               leading: const Icon(Icons.computer),
