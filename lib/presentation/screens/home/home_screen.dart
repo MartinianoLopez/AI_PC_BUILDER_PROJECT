@@ -24,15 +24,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 5, 3, 26),
       appBar: AppBar(
-        title: const Text('Pantalla Home'),
+        backgroundColor: Color.fromARGB(255, 5, 3, 26),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+              decoration: BoxDecoration(color: Color.fromARGB(255, 9, 11, 14)),
               child: Text('Menú de navegación', style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
@@ -72,8 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 300,
                 fit: BoxFit.cover,
               ),
+              
               const SizedBox( height: 30),
+              const Text('Ingresar presupuesto:'),
+              const SizedBox( height: 5),
               Padding(
+                
                 padding: const EdgeInsets.symmetric(horizontal: 100),
                 child: TextField(
                   controller: inputBudget,
@@ -84,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],  
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Ingresar Presupuesto',
+                    labelText: '',
                   ),
                   
                   
@@ -100,9 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     generateConfiguration(int.parse(inputBudget.text), context);
                   }, 
                   child: 
-                    Center(
-                      child: const Text('Generar Configuracion')
-                      )
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: const Text('Armar PC'),
+                        ),
+                    )
                 ),
               )
             ],
