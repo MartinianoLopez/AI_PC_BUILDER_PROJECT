@@ -15,7 +15,7 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/components',
-      builder: (context, state) => const Components(),
+      builder: (context, state) => Components(budget: state.extra as int),
     ),
   ],
 );
