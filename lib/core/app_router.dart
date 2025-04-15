@@ -14,8 +14,11 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ComponentsLinks(),
     ),
     GoRoute(
-      path: '/components',
-      builder: (context, state) => Components(budget: state.extra as int),
-    ),
+  path: '/components',
+  builder: (context, state) {
+    final budget = state.extra as int?;
+    return Components(budget: budget ?? 0); 
+  },
+),
   ],
 );
