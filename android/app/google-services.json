@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "879798327262",
+    "project_id": "iapcbuilder",
+    "storage_bucket": "iapcbuilder.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:879798327262:android:70194218716ef94bcaaf4f",
+        "android_client_info": {
+          "package_name": "com.example.ai_pc_builder_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTcD8qeg7Mnt8sKG65JFDrCki_E-kMjrI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
