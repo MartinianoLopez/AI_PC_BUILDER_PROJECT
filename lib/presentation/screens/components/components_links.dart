@@ -9,24 +9,42 @@ class ComponentsLinks extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Links")),
 
-      body: _RouteButtons(),
-
+      //body links component
       
+      bottomNavigationBar: _RouteButtons(),
     );
   }
 }
+
+
+
+
+
+
+
 
 class _RouteButtons extends StatelessWidget {
   const _RouteButtons();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () {
-          context.pop(); 
-        },
-        child: const Text('Volver'),
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+            },
+            child: const Text('Guardar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+            },
+            child: const Text('Compartir'),
+          ),
+          
+        ],
       ),
     );
   }
