@@ -49,14 +49,12 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await FirebaseAuth.instance.currentUser?.sendEmailVerification();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Correo de verificación enviado'),
-        ),
+        const SnackBar(content: Text('Correo de verificación enviado')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al reenviar email: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al reenviar email: $e')));
     }
   }
 
@@ -130,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     OutlinedButton(
                       onPressed: () {
+                        context.go('/registration');
                         // En el futuro: registro de usuario nuevo
                       },
                       style: OutlinedButton.styleFrom(
