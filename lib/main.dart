@@ -17,6 +17,8 @@ void main() async {
     print('❌ Error al conectar Firebase: $e');
   }
 
+//ESTO ES UN COMMIT DE PRUEBA <---------------------!!!!!!!!!!!!!!!!!!
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
