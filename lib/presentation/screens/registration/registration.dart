@@ -70,7 +70,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF030025),
+      backgroundColor: const Color.fromARGB(255, 5, 3, 26),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -83,7 +83,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset('assets/images/logo.png', height: 120),
+              
                 const SizedBox(height: 24),
                 _buildTextField('Ingresar Nombre:', 'nombre', nameController),
                 const SizedBox(height: 12),
@@ -107,7 +107,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     OutlinedButton(
-                      onPressed: () => context.go('/'),
+                      onPressed: () => context.go('/login'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white),
@@ -117,7 +117,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ElevatedButton(
                       onPressed: _register,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
+                        backgroundColor: const Color.fromARGB(255, 10, 10, 10),
                       ),
                       child: const Text('Sign in'),
                     ),

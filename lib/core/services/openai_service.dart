@@ -6,7 +6,7 @@ class OpenAIDatasource {
   Future<String> sendPrompt(String prompt) async {
     await dotenv.load();
     var apiKey = dotenv.env['OPENAI_API_KEY'];
-    
+
     final url = Uri.parse('https://api.openai.com/v1/chat/completions');
     final response = await http.post(
       url,
@@ -25,6 +25,7 @@ class OpenAIDatasource {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data['choices'][0]['message']['content'];
+
     } else {
       throw Exception('Error al consultar ChatGPT: ${response.body}');
     }

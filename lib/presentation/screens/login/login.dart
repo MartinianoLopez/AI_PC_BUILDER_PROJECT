@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF030025),
+      backgroundColor: const Color.fromARGB(255, 5, 3, 26),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -74,12 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset('assets/images/logo.png', height: 120),
-                const SizedBox(height: 24),
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Ingresar Usuario:',
+                    'Ingresar Mail:',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -88,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: emailController,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'usuario',
+                    hintText: 'mail',
                     hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
                     fillColor: Colors.grey[800],
@@ -140,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
+                        backgroundColor: const Color.fromARGB(255, 10, 10, 10),
                       ),
                       child: const Text('Login'),
                     ),
@@ -151,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _sendVerificationEmail,
                     child: const Text(
                       'Reenviar email de verificación',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                     ),
                   ),
               ],
