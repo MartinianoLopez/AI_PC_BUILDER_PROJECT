@@ -36,13 +36,16 @@ class MainDrawer extends StatelessWidget {
             title: const Text('Components'),
             onTap: () => context.go('/components'),
           ),
+          ListTile(
+            leading: const Icon(Icons.computer),
+            title: const Text('Testing'),
+            onTap: () => context.go('/testing'),
+          ),
           const Divider(),
           SwitchListTile(
             title: const Text("Modo oscuro"),
             secondary: Icon(
-              themeProvider.isDarkMode
-                  ? Icons.dark_mode
-                  : Icons.light_mode,
+              themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
             ),
             value: themeProvider.isDarkMode,
             onChanged: (_) => themeProvider.toggleTheme(),
