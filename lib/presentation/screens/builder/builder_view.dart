@@ -1,5 +1,5 @@
-import 'package:ai_pc_builder_project/data_source/components_hardcode.dart';
-import 'package:ai_pc_builder_project/domain/component.dart';
+import 'package:ai_pc_builder_project/core/data/components_hardcode.dart';
+import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

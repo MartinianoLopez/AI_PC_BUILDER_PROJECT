@@ -1,7 +1,15 @@
-import 'package:ai_pc_builder_project/core/services/test.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ai_pc_builder_project/presentation/screens/components/common/main_drawer.dart';
+import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.dart';
+import 'package:ai_pc_builder_project/core/services/openai_service.dart';
+
+Future<String> test() async {
+  final test = OpenAIDatasource();
+  final res = await test.sendPrompt(
+    "Dame una lista CORTA de componentes de PC en json",
+  );
+  return res;
+}
 
 class TestingSCreen extends StatefulWidget {
   const TestingSCreen({super.key});

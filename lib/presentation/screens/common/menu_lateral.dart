@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:ai_pc_builder_project/core/theme_provider.dart';
+import 'package:ai_pc_builder_project/core/providers/theme_provider.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});

@@ -4,10 +4,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenAIDatasource {
   Future<String> sendPrompt(String prompt) async {
-    await dotenv.load(fileName: '.env');
-
-    final String apiKey = dotenv.env['OPENAI_API_KEY']!;
-
+    await dotenv.load();
+    var apiKey = dotenv.env['OPENAI_API_KEY'];
+    
     final url = Uri.parse('https://api.openai.com/v1/chat/completions');
     final response = await http.post(
       url,

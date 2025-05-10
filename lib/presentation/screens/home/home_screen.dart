@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ai_pc_builder_project/presentation/screens/components/common/main_drawer.dart';
+import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -1,4 +1,4 @@
-import 'package:ai_pc_builder_project/domain/component.dart';
+import 'package:ai_pc_builder_project/core/classes/component.dart';
 
 final componentList = [
   // 1. Motherboards

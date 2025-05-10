@@ -4,8 +4,8 @@ import 'package:ai_pc_builder_project/presentation/screens/start/start.dart';
 import 'package:ai_pc_builder_project/presentation/screens/registration/registration.dart';
 import 'package:ai_pc_builder_project/presentation/screens/login/login.dart';
 import 'package:ai_pc_builder_project/presentation/screens/home/home_screen.dart';
-import 'package:ai_pc_builder_project/presentation/screens/components/components_links.dart';
-import 'package:ai_pc_builder_project/presentation/screens/components/components.dart';
+import 'package:ai_pc_builder_project/presentation/screens/links/components_links_view.dart';
+import 'package:ai_pc_builder_project/presentation/screens/builder/builder_view.dart';
 
 final GoRouter appRouter = GoRouter(
   routes: [
