@@ -9,18 +9,10 @@ class ComponentsLinks extends StatelessWidget {
       appBar: AppBar(title: const Text("Links")),
 
       //body links component
-      
       bottomNavigationBar: _RouteButtons(),
     );
   }
 }
-
-
-
-
-
-
-
 
 class _RouteButtons extends StatelessWidget {
   const _RouteButtons();
@@ -32,17 +24,8 @@ class _RouteButtons extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ElevatedButton(
-            onPressed: () {
-            },
-            child: const Text('Guardar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-            },
-            child: const Text('Compartir'),
-          ),
-          
+          ElevatedButton(onPressed: () {}, child: const Text('Guardar')),
+          ElevatedButton(onPressed: () {}, child: const Text('Compartir')),
         ],
       ),
     );
