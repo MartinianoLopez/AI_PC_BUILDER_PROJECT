@@ -29,7 +29,7 @@ final GoRouter appRouter = GoRouter(
       path: '/components',
       builder: (context, state) {
         final budget = state.extra as int?;
-        return Components(initialBudget: budget ?? 0);
+        return ComponenetsView(initialBudget: budget ?? 0);
       },
     ),
 

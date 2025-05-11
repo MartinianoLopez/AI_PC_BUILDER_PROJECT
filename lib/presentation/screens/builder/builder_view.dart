@@ -1,18 +1,20 @@
-import 'package:ai_pc_builder_project/core/data/components_hardcode.dart';
 import 'package:ai_pc_builder_project/core/classes/component.dart';
+import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-class Components extends StatefulWidget {
-  const Components({super.key, required this.initialBudget});
+class ComponenetsView extends StatefulWidget {
+  const ComponenetsView({super.key, required this.initialBudget});
   final int initialBudget;
 
   @override
-  State<Components> createState() => _ComponentsState();
+  State<ComponenetsView> createState() => ComponentsViewState();
   
 }
 
-class _ComponentsState extends State<Components> {
+class ComponentsViewState extends State<ComponenetsView> {
+
   late int budget;
 
   @override
@@ -21,60 +23,34 @@ class _ComponentsState extends State<Components> {
     budget = widget.initialBudget;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
+@override
+Widget build(BuildContext context) {
+  final componentsProvider = Provider.of<ComponentsProvider>(context);
+
+  return Scaffold(
+    appBar: AppBar(
+      title: Row(
         children: [
-          Text(
-            'Budget: $budget',
-            style: TextStyle(fontSize: 24),
-          ),
+          Text('Budget: $budget', style: TextStyle(fontSize: 24)),
         ],
       ),
-      ),
-      body: _ComponentsView(
-      components: componentList,
     ),
-      bottomNavigationBar: _RouteButtons(),
-
-    );
-  }
+    body: BuilderView(
+      components: componentsProvider.armado,
+    ),
+    bottomNavigationBar: _RouteButtons(),
+  );
 }
-class _RouteButtons extends StatelessWidget {
-  const _RouteButtons();
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-            },
-            child: const Text('Guardar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.push('/ComponentsLinks');
-            },
-            child: const Text('Ver Links'),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 
 
-class _ComponentsView extends StatelessWidget {
+
+class BuilderView extends StatelessWidget {
   final List<List<Component>> components;
 
-  const _ComponentsView({required this.components});
+  const BuilderView({required this.components});
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +109,36 @@ class _ComponentSliderState extends State<_ComponentSlider> {
         onTap: () {
           context.go('/component-detail/${widget.index}/${compontent.id}');
         },
+      ),
+    );
+  }
+}
+
+
+
+
+class _RouteButtons extends StatelessWidget {
+  const _RouteButtons();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+            },
+            child: const Text('Guardar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.push('/ComponentsLinks');
+            },
+            child: const Text('Ver Links'),
+          ),
+        ],
       ),
     );
   }

@@ -1,7 +1,9 @@
+import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,8 +42,16 @@ class _MainBodyState extends State<_MainBody> {
   TextEditingController inputBudget = TextEditingController();
 
 void generateConfiguration(String inputBudget, BuildContext context) {
-      context.push('/components', extra: int.parse(inputBudget));
-    }
+  final int budget = int.parse(inputBudget);
+
+  // Obtener el provider y llamar a 'createArmado'
+  final componentsProvider = Provider.of<ComponentsProvider>(context, listen: false);
+  componentsProvider.createArmado(); // Llamamos a 'createArmado' antes de navegar
+
+  // Navegar a la pantalla de componentes y pasar el presupuesto
+  context.push('/components', extra: budget);
+}
+
 
   @override
   Widget build(BuildContext context) {
