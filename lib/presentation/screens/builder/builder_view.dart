@@ -9,113 +9,123 @@ class ComponenetsView extends StatefulWidget {
   final int initialBudget;
 
   @override
-  State<ComponenetsView> createState() => ComponentsViewState();
-  
+  State<ComponenetsView> createState() => _ComponentsViewState();
 }
 
-class ComponentsViewState extends State<ComponenetsView> {
-
+class _ComponentsViewState extends State<ComponenetsView> {
   late int budget;
 
   @override
- void initState() {
+  void initState() {
     super.initState();
     budget = widget.initialBudget;
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+    provider.createArmado();
   }
 
-@override
-Widget build(BuildContext context) {
-  final componentsProvider = Provider.of<ComponentsProvider>(context);
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<ComponentsProvider>(context);
 
-  return Scaffold(
-    appBar: AppBar(
-      title: Row(
-        children: [
-          Text('Budget: $budget', style: TextStyle(fontSize: 24)),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Budget: \$${budget.toString()}'),
       ),
-    ),
-    body: BuilderView(
-      components: componentsProvider.armado,
-    ),
-    bottomNavigationBar: _RouteButtons(),
-  );
+      body: provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : BuilderView(
+              components: provider.armado,
+              titulos: provider.titulos,
+            ),
+      bottomNavigationBar: const _RouteButtons(),
+    );
+  }
 }
-
-}
-
-
-
 
 class BuilderView extends StatelessWidget {
   final List<List<Component>> components;
+  final List<String> titulos;
 
-  const BuilderView({required this.components});
+  const BuilderView({
+    super.key,
+    required this.components,
+    required this.titulos,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: components.length,
       itemBuilder: (context, index) {
-        return _ComponentSlider(
-          component: components[index],
-          index: index.toString()
-          );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                titulos[index],
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            _ComponentSlider(
+              component: components[index],
+              index: index.toString(),
+            ),
+          ],
+        );
       },
     );
   }
 }
 
-
-
-
 class _ComponentSlider extends StatefulWidget {
   const _ComponentSlider({required this.component, required this.index});
   final List<Component> component;
   final String index;
+
   @override
   State<_ComponentSlider> createState() => _ComponentSliderState();
 }
 
-
 class _ComponentSliderState extends State<_ComponentSlider> {
-  double currentValue = 2;
+  double currentValue = 0;
 
   @override
   Widget build(BuildContext context) {
-    Component compontent = widget.component[currentValue.toInt()];
+    if (widget.component.isEmpty) return const SizedBox();
+
+    final comp = widget.component[currentValue.toInt()];
 
     return Card(
-      child: ListTile(
-        title: Text(compontent.name),
-        subtitle: Slider(
-          year2023: false,
-          value: currentValue,
-          min: 0,
-          max: widget.component.length - 1,  
-          label: currentValue.round().toString(),
-          onChanged: (value) {
-            setState(() {
-              currentValue = value;
-            });
-          },
-        ),
-        trailing: compontent.image != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(compontent.image!),
-              )
-            : const Icon(Icons.computer_sharp),
-        onTap: () {
-          context.go('/component-detail/${widget.index}/${compontent.id}');
-        },
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(comp.name),
+            subtitle: Slider(
+              value: currentValue,
+              min: 0,
+              max: widget.component.length - 1,
+              divisions: widget.component.length - 1,
+              label: widget.component[currentValue.toInt()].name,
+              onChanged: (value) {
+                setState(() {
+                  currentValue = value;
+                });
+              },
+            ),
+            onTap: () {
+              context.go('/component-detail/${widget.index}/${comp.id}');
+            },
+          ),
+        ],
       ),
     );
   }
 }
-
-
-
 
 class _RouteButtons extends StatelessWidget {
   const _RouteButtons();
@@ -123,14 +133,32 @@ class _RouteButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ElevatedButton(
             onPressed: () {
+              // guardar acción
             },
             child: const Text('Guardar'),
+          ),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // acción AMD
+                },
+                child: const Text('AMD'),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  // acción Intel
+                },
+                child: const Text('Intel'),
+              ),
+            ],
           ),
           ElevatedButton(
             onPressed: () {
