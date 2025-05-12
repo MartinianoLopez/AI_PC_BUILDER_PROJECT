@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -48,22 +49,20 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBTcD8qeg7Mnt8sKG65JFDrCki_E-kMjrI',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_FOR_ANDROID']!,
     appId: '1:879798327262:android:70194218716ef94bcaaf4f',
     messagingSenderId: '879798327262',
     projectId: 'iapcbuilder',
     storageBucket: 'iapcbuilder.firebasestorage.app',
   );
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBVdTn4Ix98YE3zNdXsiqLYpfO8nJq6QSA',
+  static FirebaseOptions web = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_FOR_WEB']!,
     appId: '1:879798327262:web:21ce1ffdab7af879caaf4f',
     messagingSenderId: '879798327262',
     projectId: 'iapcbuilder',
     authDomain: 'iapcbuilder.firebaseapp.com',
     storageBucket: 'iapcbuilder.firebasestorage.app',
   );
-
 }

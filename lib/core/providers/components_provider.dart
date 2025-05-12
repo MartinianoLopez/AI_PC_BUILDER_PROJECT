@@ -32,7 +32,7 @@ class ComponentsProvider with ChangeNotifier {
         "ssd",
         "placa_video",
         "gabinete",
-        "fuente"
+        "fuente",
       ];
 
       final titulosOrdenados = [
@@ -44,7 +44,7 @@ class ComponentsProvider with ChangeNotifier {
         "Disco (SSD/HDD)",
         "Placa de Video",
         "Gabinete",
-        "Fuente de Poder"
+        "Fuente de Poder",
       ];
 
       final List<List<Component>> ordenado = [];

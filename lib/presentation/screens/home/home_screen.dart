@@ -14,21 +14,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 5, 3, 26),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 5, 3, 26),
-      ),
+      appBar: AppBar(backgroundColor: const Color.fromARGB(255, 5, 3, 26)),
       drawer: const MainDrawer(),
       body: _MainBody(),
     );
   }
 }
-
-
-
-
 
 class _MainBody extends StatefulWidget {
   const _MainBody();
@@ -38,20 +31,22 @@ class _MainBody extends StatefulWidget {
 }
 
 class _MainBodyState extends State<_MainBody> {
-
   TextEditingController inputBudget = TextEditingController();
 
-void generateConfiguration(String inputBudget, BuildContext context) {
-  final int budget = int.parse(inputBudget);
+  void generateConfiguration(String inputBudget, BuildContext context) {
+    final int budget = int.parse(inputBudget);
 
-  // Obtener el provider y llamar a 'createArmado'
-  final componentsProvider = Provider.of<ComponentsProvider>(context, listen: false);
-  componentsProvider.createArmado(); // Llamamos a 'createArmado' antes de navegar
+    // Obtener el provider y llamar a 'createArmado'
+    final componentsProvider = Provider.of<ComponentsProvider>(
+      context,
+      listen: false,
+    );
+    componentsProvider
+        .createArmado(); // Llamamos a 'createArmado' antes de navegar
 
-  // Navegar a la pantalla de componentes y pasar el presupuesto
-  context.push('/components', extra: budget);
-}
-
+    // Navegar a la pantalla de componentes y pasar el presupuesto
+    context.push('/components', extra: budget);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +70,7 @@ void generateConfiguration(String inputBudget, BuildContext context) {
                 controller: inputBudget,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: '',
@@ -93,12 +86,10 @@ void generateConfiguration(String inputBudget, BuildContext context) {
                 },
                 child: const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Text('Armar PC'),
-                  ),
+                  child: Center(child: Text('Armar PC')),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

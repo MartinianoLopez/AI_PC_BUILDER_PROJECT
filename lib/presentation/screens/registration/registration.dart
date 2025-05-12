@@ -56,9 +56,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       if (mounted) context.go('/login');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.message}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.message}')));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +83,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-              
                 const SizedBox(height: 24),
                 _buildTextField('Ingresar Nombre:', 'nombre', nameController),
                 const SizedBox(height: 12),

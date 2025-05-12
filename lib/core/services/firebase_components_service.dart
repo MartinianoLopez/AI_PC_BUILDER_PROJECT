@@ -20,25 +20,28 @@ Future<Map<String, List<Component>>> fetchComponentsFromFirestore() async {
   final Map<String, List<Component>> resultado = {};
 
   for (final cat in categorias) {
-    final querySnapshot = await firestore
-        .collection('productos_try')
-        .doc(cat)
-        .collection('items')
-        .orderBy('precio')
-        .get();
+    final querySnapshot =
+        await firestore
+            .collection('productos_try')
+            .doc(cat)
+            .collection('items')
+            .orderBy('precio')
+            .get();
 
     final List<Component> componentes = [];
 
     for (final doc in querySnapshot.docs) {
       final data = doc.data();
 
-      componentes.add(Component(
-        id: doc.id,
-        name: data['titulo'] ?? '',
-        price: (data['precio'] as num).toDouble(),
-        link: data['enlace'] ?? '',
-        image: data['imagen'],
-      ));
+      componentes.add(
+        Component(
+          id: doc.id,
+          name: data['titulo'] ?? '',
+          price: (data['precio'] as num).toDouble(),
+          link: data['enlace'] ?? '',
+          image: data['imagen'],
+        ),
+      );
     }
 
     resultado[cat] = componentes;

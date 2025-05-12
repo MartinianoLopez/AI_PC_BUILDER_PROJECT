@@ -29,6 +29,14 @@ class _ComponentsViewState extends State<ComponenetsView> {
     final provider = Provider.of<ComponentsProvider>(context);
 
     return Scaffold(
+      appBar: AppBar(title: Text('Budget: \$${budget.toString()}')),
+      body:
+          provider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : BuilderView(
+                components: provider.armado,
+                titulos: provider.titulos,
+              ),
       appBar: AppBar(
         title: Row(
           children: [

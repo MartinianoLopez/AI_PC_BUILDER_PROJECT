@@ -25,7 +25,6 @@ class OpenAIDatasource {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data['choices'][0]['message']['content'];
-
     } else {
       throw Exception('Error al consultar ChatGPT: ${response.body}');
     }
