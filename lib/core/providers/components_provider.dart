@@ -5,12 +5,15 @@ import 'package:ai_pc_builder_project/core/services/firebase_components_service.
 class ComponentsProvider with ChangeNotifier {
   List<List<Component>> armado = [];
   List<String> titulos = [];
+  List<Component?> seleccionados = [];
 
   bool _cargado = false;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  /// Llamado desde la vista cuando se presiona "Armar PC"
+  double get total =>
+      seleccionados.fold(0.0, (sum, comp) => sum + (comp?.price ?? 0));
+
   Future<void> createArmado() async {
     if (_cargado) return;
 
@@ -50,14 +53,26 @@ class ComponentsProvider with ChangeNotifier {
       for (int i = 0; i < orden.length; i++) {
         final key = orden[i];
         final list = data[key];
-        if (list != null && list.isNotEmpty) {
-          ordenado.add(list);
+        if (list != null) {
+          final conPlaceholder = [
+            Component(
+              id: 'none',
+              name: 'Sin seleccionar',
+              link: '',
+              price: 0,
+              image: null,
+            ),
+            ...list
+          ];
+
+          ordenado.add(conPlaceholder);
           titulosFinal.add(titulosOrdenados[i]);
         }
       }
 
       armado = ordenado;
       titulos = titulosFinal;
+      seleccionados = List.filled(armado.length, null);
       _cargado = true;
 
       print("✅ Componentes cargados: ${titulos.length} categorías");
@@ -67,5 +82,16 @@ class ComponentsProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  void setSelected(int index, Component component) {
+    seleccionados[index] = component.id == 'none' ? null : component;
+    notifyListeners();
+  }
+
+  int getSelectedIndex(int index) {
+    final selected = seleccionados[index];
+    if (selected == null) return 0;
+    return armado[index].indexWhere((c) => c.id == selected.id);
   }
 }

@@ -3,6 +3,7 @@ import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class ComponenetsView extends StatefulWidget {
   const ComponenetsView({super.key, required this.initialBudget});
@@ -29,7 +30,16 @@ class _ComponentsViewState extends State<ComponenetsView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Budget: \$${budget.toString()}'),
+        title: Row(
+          children: [
+            Text('Presupuesto: \$${budget.toString()}'),
+            const Spacer(),
+            Text(
+              'Total: \$${NumberFormat("#,##0", "es_AR").format(provider.total)}',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -72,7 +82,7 @@ class BuilderView extends StatelessWidget {
             ),
             _ComponentSlider(
               component: components[index],
-              index: index.toString(),
+              index: index,
             ),
           ],
         );
@@ -84,7 +94,7 @@ class BuilderView extends StatelessWidget {
 class _ComponentSlider extends StatefulWidget {
   const _ComponentSlider({required this.component, required this.index});
   final List<Component> component;
-  final String index;
+  final int index;
 
   @override
   State<_ComponentSlider> createState() => _ComponentSliderState();
@@ -94,14 +104,31 @@ class _ComponentSliderState extends State<_ComponentSlider> {
   double currentValue = 0;
 
   @override
+  void initState() {
+    super.initState();
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+    final selectedIndex = provider.getSelectedIndex(widget.index);
+    setState(() {
+      currentValue = selectedIndex.toDouble();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (widget.component.isEmpty) return const SizedBox();
 
+    final provider = Provider.of<ComponentsProvider>(context);
     final comp = widget.component[currentValue.toInt()];
+    final formattedPrice = NumberFormat.currency(
+      locale: 'es_AR',
+      symbol: '\$',
+      decimalDigits: 2,
+    ).format(comp.price);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
             title: Text(comp.name),
@@ -110,16 +137,25 @@ class _ComponentSliderState extends State<_ComponentSlider> {
               min: 0,
               max: widget.component.length - 1,
               divisions: widget.component.length - 1,
-              label: widget.component[currentValue.toInt()].name,
               onChanged: (value) {
                 setState(() {
                   currentValue = value;
                 });
+                provider.setSelected(widget.index, widget.component[value.toInt()]);
               },
             ),
             onTap: () {
-              context.go('/component-detail/${widget.index}/${comp.id}');
+              if (comp.id != 'none') {
+                context.go('/component-detail/${widget.index}/${comp.id}');
+              }
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 8),
+            child: Text(
+              'Precio: $formattedPrice',
+              style: const TextStyle(color: Colors.white70),
+            ),
           ),
         ],
       ),
@@ -149,14 +185,14 @@ class _RouteButtons extends StatelessWidget {
                 onPressed: () {
                   // acción AMD
                 },
-                child: const Text('AMD'),
+                child: const Text('PC AMD'),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () {
                   // acción Intel
                 },
-                child: const Text('Intel'),
+                child: const Text('PC Intel'),
               ),
             ],
           ),
