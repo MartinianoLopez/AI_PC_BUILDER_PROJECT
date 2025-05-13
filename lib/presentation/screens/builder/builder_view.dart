@@ -126,7 +126,7 @@ class _ComponentSliderState extends State<_ComponentSlider> {
       decimalDigits: 2,
     ).format(comp.price);
 
-    return Card(
+   /* return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,7 +160,74 @@ class _ComponentSliderState extends State<_ComponentSlider> {
           ),
         ],
       ),
-    );
+    );*/
+
+return Card(
+  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+  child: Padding(
+    padding: const EdgeInsets.all(12.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          comp.name,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: currentValue,
+                min: 0,
+                max: widget.component.length - 1,
+                divisions: widget.component.length - 1,
+                onChanged: (value) {
+                  setState(() {
+                    currentValue = value;
+                  });
+                  provider.setSelected(
+                      widget.index, widget.component[value.toInt()]);
+                },
+              ),
+            ),
+            Column(
+              children: [
+                if (comp.image != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      comp.image!,
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.broken_image, size: 40),
+                    ),
+                  ),
+                const SizedBox(height: 4),
+                Text(
+                  'Precio: $formattedPrice',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);
+
+
+
+
   }
 }
 

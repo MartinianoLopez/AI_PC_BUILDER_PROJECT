@@ -33,7 +33,7 @@ class _MainBody extends StatefulWidget {
 class _MainBodyState extends State<_MainBody> {
   TextEditingController inputBudget = TextEditingController();
 
-  void generateConfiguration(String inputBudget, BuildContext context) {
+ /* void generateConfiguration(String inputBudget, BuildContext context) {
     final int budget = int.parse(inputBudget);
 
     // Obtener el provider y llamar a 'createArmado'
@@ -47,6 +47,37 @@ class _MainBodyState extends State<_MainBody> {
     // Navegar a la pantalla de componentes y pasar el presupuesto
     context.push('/components', extra: budget);
   }
+  */
+  
+
+  void generateConfiguration(String inputBudget, BuildContext context) {
+  final int budget = int.tryParse(inputBudget) ?? 0;
+
+  if (budget < 399000) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Presupuesto insuficiente'),
+        content: const Text('Debes ingresar al menos \$399.000 para poder armar una PC completa.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
+
+  final componentsProvider = Provider.of<ComponentsProvider>(
+    context,
+    listen: false,
+  );
+  componentsProvider.createArmado();
+
+  context.push('/components', extra: budget);
+}
 
   @override
   Widget build(BuildContext context) {
