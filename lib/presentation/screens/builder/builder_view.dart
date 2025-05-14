@@ -23,12 +23,29 @@ class _ComponentsViewState extends State<ComponenetsView> {
   late int budget;
 
   @override
-  void initState() {
-    super.initState();
-    budget = widget.initialBudget;
-    final provider = Provider.of<ComponentsProvider>(context, listen: false);
-    provider.createArmado();
-  }
+void initState() {
+  super.initState();
+  budget = widget.initialBudget;
+
+  final provider = Provider.of<ComponentsProvider>(context, listen: false);
+  provider.createArmado();
+
+  _loadSavedConfigurations();
+}
+
+void _loadSavedConfigurations() async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
+
+  final storage = UserConfigurationStorage();
+  final configs = await storage.getUserConfigurations(uid);
+
+  setState(() {
+    savedConfigurations = configs;
+    loadingSaved = false;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +65,20 @@ class _ComponentsViewState extends State<ComponenetsView> {
           ],
         ),
       ),
+      
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : BuilderView(
               components: provider.armado,
               titulos: provider.titulos,
             ),
+
+
+
+
+
+// -----
+
       bottomNavigationBar: const _RouteButtons(),
     );
   }
