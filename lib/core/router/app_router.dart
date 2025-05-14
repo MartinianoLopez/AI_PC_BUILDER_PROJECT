@@ -1,4 +1,5 @@
 import 'package:ai_pc_builder_project/presentation/screens/testing/test.dart';
+import 'package:ai_pc_builder_project/presentation/screens/testing/test_image.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ai_pc_builder_project/presentation/screens/start/start.dart';
 import 'package:ai_pc_builder_project/presentation/screens/registration/registration.dart';
@@ -36,6 +37,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/testing',
       builder: (context, state) => const TestingSCreen(),
+    ),
+    GoRoute(
+      path: '/test_image',
+      builder: (context, state) => const ImageTesterScreen(),
     ),
   ],
 );

@@ -41,6 +41,11 @@ class MainDrawer extends StatelessWidget {
             title: const Text('Testing'),
             onTap: () => context.go('/testing'),
           ),
+          ListTile(
+            leading: const Icon(Icons.computer),
+            title: const Text('Test Imagen'),
+            onTap: () => context.go('/test_image'),
+          ),
           const Divider(),
           SwitchListTile(
             title: const Text("Modo oscuro"),

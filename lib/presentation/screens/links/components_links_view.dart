@@ -10,30 +10,28 @@ class ComponentsLinks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selecionados = Provider.of<ComponentsProvider>(context).seleccionados;
-
     return Scaffold(
       appBar: AppBar(title: const Text("Links")),
 
       //body links component
       body: ListView(
-        scrollDirection: Axis.vertical,
-        children:
-            selecionados
-                .where((sel) => sel != null)
-                .map(
-                  (sel) => _Card(
-                    component:
-                        sel ??
-                        Component(
-                          id: '-1',
-                          name: "No Seleccionado",
-                          link: "#",
-                          price: -1,
-                        ),
-                  ),
-                )
-                .toList(),
-      ),
+  scrollDirection: Axis.vertical,
+  children: selecionados
+      .where((sel) => sel != null)
+      .map((sel) {
+        final component = sel ??
+            Component(
+              id: '-1',
+              name: "No Seleccionado",
+              link: "#",
+              image: "#",
+              price: -1,
+            );
+        return _Card(component: component);
+      })
+      .toList(),
+),
+
       bottomNavigationBar: _RouteButtons(),
     );
   }
@@ -61,16 +59,26 @@ class _Card extends StatelessWidget {
                 spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (component.image != null)
+                  
+                  if (component.image.trim().isNotEmpty)
                     Image.network(
-                      component.image!,
+                      component.image,
                       width: 70,
                       height: 70,
                       fit: BoxFit.cover,
-                      errorBuilder:
-                          (_, __, ___) =>
-                              const Icon(Icons.broken_image, size: 40),
-                    ),
+                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 70),
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        );
+                      },
+                    )
+                  else
+                    const Icon(Icons.image_not_supported, size: 70),
+
                   Column(
                     children: [
                       SizedBox(

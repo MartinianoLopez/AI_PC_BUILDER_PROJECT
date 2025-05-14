@@ -3,13 +3,13 @@ class Component {
   final String name;
   final String link;
   final double price;
-  final String? image;
+  final String image;
 
   Component({
     required this.id,
     required this.name,
     required this.link,
     required this.price,
-    this.image,
+    required this.image,
   });
 }

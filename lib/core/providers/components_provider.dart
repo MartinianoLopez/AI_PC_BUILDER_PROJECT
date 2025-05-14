@@ -1,8 +1,9 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/services/firebase_components_service.dart';
 import 'dart:convert'; 
-import 'package:ai_pc_builder_project/core/services/openai_service.dart';
 
 class ComponentsProvider with ChangeNotifier {
   List<List<Component>> armado = [];
@@ -101,7 +102,7 @@ class ComponentsProvider with ChangeNotifier {
               name: 'Sin seleccionar',
               link: '',
               price: 0,
-              image: null,
+              image: "https://static.thenounproject.com/png/2222628-200.png",
             ),
             ...list
           ];

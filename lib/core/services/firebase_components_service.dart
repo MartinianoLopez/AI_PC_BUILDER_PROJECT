@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 
@@ -53,7 +55,7 @@ Future<Map<String, List<Component>>> fetchComponentsFromFirestore(
           name: data['titulo'] ?? '',
           price: (data['precio'] as num).toDouble(),
           link: data['enlace'] ?? '',
-          image: data['imagen'],
+          image: data['imagen'] ?? '',
         ),
       );
     }

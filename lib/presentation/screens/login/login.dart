@@ -20,17 +20,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = passwordController.text.trim();
 
     try {
-      final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
 
       final isVerified = userCredential.user?.emailVerified ?? false;
 
       if (isVerified) {
+        if (!mounted) return;
         context.go('/home');
       } else {
         setState(() {
           _showVerifyButton = true;
         });
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Verificá tu email antes de ingresar'),
@@ -48,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _sendVerificationEmail() async {
     try {
       await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Correo de verificación enviado')),
       );
