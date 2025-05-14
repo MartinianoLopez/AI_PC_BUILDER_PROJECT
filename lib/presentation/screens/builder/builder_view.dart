@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ai_pc_builder_project/core/providers/user_configuration_storage.dart';
+
 
 class ComponenetsView extends StatefulWidget {
   const ComponenetsView({super.key, required this.initialBudget});
@@ -14,6 +17,9 @@ class ComponenetsView extends StatefulWidget {
 }
 
 class _ComponentsViewState extends State<ComponenetsView> {
+  List<Map<String, dynamic>> savedConfigurations = [];
+  bool loadingSaved = true;
+
   late int budget;
 
   @override
@@ -241,12 +247,77 @@ class _RouteButtons extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+
           ElevatedButton(
+  onPressed: () async {
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('❌ Usuario no logueado')),
+      );
+      return;
+    }
+
+    String configName = '';
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Nombre del armado'),
+          content: TextField(
+            autofocus: true,
+            onChanged: (value) {
+              configName = value;
+            },
+            decoration: const InputDecoration(hintText: "Ej: Mi PC gamer"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (configName.trim().isEmpty) return;
+
+    try {
+      final storage = UserConfigurationStorage();
+      await storage.saveConfiguration(
+        uid: uid,
+        configName: configName.trim(),
+        total: provider.total,
+        seleccionados: provider.seleccionados,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('✅ Armado guardado con éxito')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Error: ${e.toString()}')),
+      );
+    }
+  },
+  child: const Text('Guardar'),
+),
+
+
+
+          /*ElevatedButton(
             onPressed: () {
               // guardar acción
             },
             child: const Text('Guardar'),
-          ),
+          ), */
           Row(
             children: [
               ElevatedButton(

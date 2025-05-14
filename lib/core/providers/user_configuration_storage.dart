@@ -1,0 +1,67 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ai_pc_builder_project/core/classes/component.dart';
+
+class UserConfigurationStorage {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> saveConfiguration({
+    required String uid,
+    required String configName,
+    required double total,
+    required List<Component?> seleccionados,
+  }) async {
+    final armadosRef = _firestore.collection('users').doc(uid).collection('armados');
+
+    // Validar límite de 10 armados
+    final snapshot = await armadosRef.get();
+    if (snapshot.docs.length >= 10) {
+      throw Exception('Ya tienes 10 PCs guardadas.');
+    }
+
+    // Convertir componentes a JSON completo (preservando campos de Firebase)
+    final componentes = seleccionados
+        .where((c) => c != null)
+        .map((c) => {
+              'id': c!.id,
+              'titulo': c.name,
+              'precio': c.price,
+              'imagen': c.image,
+              'enlace': c.link,
+              // Extras si tenés: categoría, tienda, etc.
+            })
+        .toList();
+
+    // Crear documento
+    final data = {
+      'name': configName,
+      'total': total,
+      'date': DateTime.now().toIso8601String(),
+      'componentes': componentes,
+    };
+
+    await armadosRef.add(data);
+  }
+
+  Future<List<Map<String, dynamic>>> getUserConfigurations(String uid) async {
+  final snapshot = await _firestore
+      .collection('users')
+      .doc(uid)
+      .collection('armados')
+      .orderBy('date', descending: true)
+      .get();
+
+  return snapshot.docs.map((doc) {
+    final data = doc.data();
+    return {
+      'id': doc.id,
+      'name': data['name'],
+      'total': data['total'],
+      'componentes': data['componentes'] ?? [],
+    };
+  }).toList();
+}
+
+
+
+
+}
