@@ -1,6 +1,7 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,7 +35,7 @@ class ComponentsLinks extends StatelessWidget {
                 )
                 .toList(),
       ),
-      bottomNavigationBar: _RouteButtons(),
+      bottomNavigationBar: _RouteButtons(components: selecionados),
     );
   }
 }
@@ -113,17 +114,25 @@ class _Card extends StatelessWidget {
 }
 
 class _RouteButtons extends StatelessWidget {
-  const _RouteButtons();
+  final List<Component?> components;
+
+  const _RouteButtons({required this.components}) : super();
 
   @override
   Widget build(BuildContext context) {
+    String links = components.map((c) => c?.link ?? '').join(' ');
     return Container(
       padding: EdgeInsets.all(12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(onPressed: () {}, child: const Text('Guardar')),
-          ElevatedButton(onPressed: () {}, child: const Text('Compartir')),
+          ElevatedButton(
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: links));
+            },
+            child: const Text('Compartir'),
+          ),
         ],
       ),
     );
