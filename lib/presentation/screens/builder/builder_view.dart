@@ -28,7 +28,7 @@ void initState() {
   budget = widget.initialBudget;
 
   final provider = Provider.of<ComponentsProvider>(context, listen: false);
-  provider.createArmado();
+  provider.createArmado(budget: budget);
 
   _loadSavedConfigurations();
 }

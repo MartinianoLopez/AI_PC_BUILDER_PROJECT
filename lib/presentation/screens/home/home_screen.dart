@@ -102,7 +102,7 @@ void initState() {
     context,
     listen: false,
   );
-  componentsProvider.createArmado();
+  componentsProvider.createArmado(budget: budget);
 
   context.push('/components', extra: budget);
 }

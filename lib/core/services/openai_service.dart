@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class OpenAIDatasource {
   Future<String> sendPrompt(String prompt) async {
     await dotenv.load();
     var apiKey = dotenv.env['OPENAI_API_KEY'];
@@ -29,4 +28,3 @@ class OpenAIDatasource {
       throw Exception('Error al consultar ChatGPT: ${response.body}');
     }
   }
-}
