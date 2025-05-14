@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/services/firebase_components_service.dart';
-import 'dart:convert'; 
+import 'dart:convert';
 
 class ComponentsProvider with ChangeNotifier {
   List<List<Component>> armado = [];
@@ -20,17 +20,14 @@ class ComponentsProvider with ChangeNotifier {
   Future<void> createArmado({required int budget}) async {
     if (_cargado) return;
 
-
     _isLoading = true;
     notifyListeners();
 
     try {
-      
-      
       // intente generar el rango con ia, pero no genera bien y tiene muchos errores, creo que es mejor calcularlo nosotros segun la distribucion promedio y un factor de tolerancia
       //por ejemplo 30 porciento para el procesador 20 para la mother y 40 % de tolerancia.
 
-        final response = '''
+      final response = '''
       {
         "procesador_amd": {"min": 50000.0, "max": 150000.0},
         "procesador_intel": {"min": 50000.0, "max": 150000.0},
@@ -42,15 +39,16 @@ class ComponentsProvider with ChangeNotifier {
         "gabinete": {"min": 15000.0, "max": 40000.0},
         "fuente": {"min": 20000.0, "max": 60000.0}
       }
-      '''; 
+      ''';
 
-     
       final decoded = jsonDecode(response);
 
       //  Generamos los rangos esperados
       final Map<String, Map<String, double>> rangos = {};
       decoded.forEach((key, value) {
-        if (value is Map<String, dynamic> && value.containsKey('min') && value.containsKey('max')) {
+        if (value is Map<String, dynamic> &&
+            value.containsKey('min') &&
+            value.containsKey('max')) {
           rangos[key] = {
             'min': (value['min'] as num).toDouble(),
             'max': (value['max'] as num).toDouble(),
@@ -60,10 +58,6 @@ class ComponentsProvider with ChangeNotifier {
 
       //  Usamos esos rangos para pedir los componentes
       final data = await fetchComponentsFromFirestore(rangos);
-
-
-
-
 
       final orden = [
         "procesador_amd",
@@ -104,7 +98,7 @@ class ComponentsProvider with ChangeNotifier {
               price: 0,
               image: "https://static.thenounproject.com/png/2222628-200.png",
             ),
-            ...list
+            ...list,
           ];
 
           ordenado.add(conPlaceholder);
@@ -135,5 +129,10 @@ class ComponentsProvider with ChangeNotifier {
     final selected = seleccionados[index];
     if (selected == null) return 0;
     return armado[index].indexWhere((c) => c.id == selected.id);
+  }
+
+  void setAllSelected(List<Component> newSeleccionados) {
+    seleccionados = newSeleccionados;
+    notifyListeners();
   }
 }

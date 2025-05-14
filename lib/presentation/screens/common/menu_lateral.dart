@@ -29,7 +29,7 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.link),
             title: const Text('Links'),
-            onTap: () => context.go('/ComponentsLinks'),
+            onTap: () => context.go('/links'),
           ),
           ListTile(
             leading: const Icon(Icons.computer),

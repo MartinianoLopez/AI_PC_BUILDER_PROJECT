@@ -22,7 +22,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
 
     GoRoute(
-      path: '/ComponentsLinks',
+      path: '/links',
       builder: (context, state) => const ComponentsLinks(),
     ),
 

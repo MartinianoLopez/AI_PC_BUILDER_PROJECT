@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ai_pc_builder_project/core/providers/user_configuration_storage.dart';
 
-
 class ComponenetsView extends StatefulWidget {
   const ComponenetsView({super.key, required this.initialBudget});
   final int initialBudget;
@@ -23,36 +22,34 @@ class _ComponentsViewState extends State<ComponenetsView> {
   late int budget;
 
   @override
-void initState() {
-  super.initState();
-  budget = widget.initialBudget;
+  void initState() {
+    super.initState();
+    budget = widget.initialBudget;
 
-  final provider = Provider.of<ComponentsProvider>(context, listen: false);
-  provider.createArmado(budget: budget);
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+    provider.createArmado(budget: budget);
 
-  _loadSavedConfigurations();
-}
+    _loadSavedConfigurations();
+  }
 
-void _loadSavedConfigurations() async {
-  final uid = FirebaseAuth.instance.currentUser?.uid;
-  if (uid == null) return;
+  void _loadSavedConfigurations() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
 
-  final storage = UserConfigurationStorage();
-  final configs = await storage.getUserConfigurations(uid);
+    final storage = UserConfigurationStorage();
+    final configs = await storage.getUserConfigurations(uid);
 
-  setState(() {
-    savedConfigurations = configs;
-    loadingSaved = false;
-  });
-}
-
+    setState(() {
+      savedConfigurations = configs;
+      loadingSaved = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ComponentsProvider>(context);
+    final provider = Provider.of<ComponentsProvider>(context, listen: true);
 
     return Scaffold(
-     
       appBar: AppBar(
         title: Row(
           children: [
@@ -65,23 +62,19 @@ void _loadSavedConfigurations() async {
           ],
         ),
       ),
-      
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : BuilderView(
-              components: provider.armado,
-              titulos: provider.titulos,
-            ),
+
+      body:
+          provider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : BuilderView(
+                components: provider.armado,
+                titulos: provider.titulos,
+              ),
 
       bottomNavigationBar: const _RouteButtons(),
     );
   }
 }
-
-
-
-
-
 
 class BuilderView extends StatelessWidget {
   final List<List<Component>> components;
@@ -111,10 +104,7 @@ class BuilderView extends StatelessWidget {
                 ),
               ),
             ),
-            _ComponentSlider(
-              component: components[index],
-              index: index,
-            ),
+            _ComponentSlider(component: components[index], index: index),
           ],
         );
       },
@@ -149,7 +139,11 @@ class _ComponentSliderState extends State<_ComponentSlider> {
     if (widget.component.isEmpty) return const SizedBox();
     final provider = Provider.of<ComponentsProvider>(context);
     final comp = widget.component[currentValue.toInt()];
-    final formattedPrice = NumberFormat.currency( locale: 'es_AR', symbol: '\$', decimalDigits: 2, ).format(comp.price);
+    final formattedPrice = NumberFormat.currency(
+      locale: 'es_AR',
+      symbol: '\$',
+      decimalDigits: 2,
+    ).format(comp.price);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -160,10 +154,7 @@ class _ComponentSliderState extends State<_ComponentSlider> {
           children: [
             Text(
               comp.name,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Row(
@@ -179,7 +170,9 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                         currentValue = value;
                       });
                       provider.setSelected(
-                          widget.index, widget.component[value.toInt()]);
+                        widget.index,
+                        widget.component[value.toInt()],
+                      );
                     },
                   ),
                 ),
@@ -193,8 +186,9 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                           width: 70,
                           height: 70,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.broken_image, size: 40),
+                          errorBuilder:
+                              (_, __, ___) =>
+                                  const Icon(Icons.broken_image, size: 40),
                         ),
                       ),
                     const SizedBox(height: 4),
@@ -226,12 +220,13 @@ class _RouteButtons extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          
-
           ElevatedButton(
             child: const Text('Guardar'),
             onPressed: () async {
-              final provider = Provider.of<ComponentsProvider>(context, listen: false);
+              final provider = Provider.of<ComponentsProvider>(
+                context,
+                listen: false,
+              );
               final uid = FirebaseAuth.instance.currentUser?.uid;
 
               if (uid == null) {
@@ -252,7 +247,9 @@ class _RouteButtons extends StatelessWidget {
                       onChanged: (value) {
                         configName = value;
                       },
-                      decoration: const InputDecoration(hintText: "Ej: Mi PC gamer"),
+                      decoration: const InputDecoration(
+                        hintText: "Ej: Mi PC gamer",
+                      ),
                     ),
                     actions: [
                       TextButton(
@@ -280,21 +277,20 @@ class _RouteButtons extends StatelessWidget {
                 );
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('✅ Armado guardado con éxito')),
+                    const SnackBar(
+                      content: Text('✅ Armado guardado con éxito'),
+                    ),
                   );
                 }
               } catch (e) {
                 if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('❌ Error: ${e.toString()}')),
-                );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('❌ Error: ${e.toString()}')),
+                  );
                 }
               }
             },
           ),
-
-
-
 
           Row(
             children: [
@@ -314,12 +310,9 @@ class _RouteButtons extends StatelessWidget {
             ],
           ),
 
-
-
-
           ElevatedButton(
             onPressed: () {
-              context.push('/ComponentsLinks');
+              context.push('/links');
             },
             child: const Text('Ver Links'),
           ),

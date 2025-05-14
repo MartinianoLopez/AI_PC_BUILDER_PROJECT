@@ -5,37 +5,63 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ComponentsLinks extends StatelessWidget {
+class ComponentsLinks extends StatefulWidget {
   const ComponentsLinks({super.key});
 
   @override
+  State<ComponentsLinks> createState() => _ComponentsLinksState();
+}
+
+class _ComponentsLinksState extends State<ComponentsLinks> {
+  late List<Component?> seleccionados = [];
+  late VoidCallback listener;
+  @override
+  void initState() {
+    super.initState();
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+    seleccionados = provider.seleccionados;
+
+    listener = () {
+      if (mounted) {
+        setState(() {
+          seleccionados = provider.seleccionados;
+        });
+      }
+    };
+
+    provider.addListener(listener);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final selecionados = Provider.of<ComponentsProvider>(context).seleccionados;
     return Scaffold(
       appBar: AppBar(title: const Text("Links")),
 
       //body links component
-      body: ListView(
-        scrollDirection: Axis.vertical,
-        children:
-            selecionados
-                .where((sel) => sel != null)
-                .map(
-                  (sel) => _Card(
-                    component:
-                        sel ??
-                        Component(
-                          id: '-1',
-                          name: "No Seleccionado",
-                          link: "#",
-                          image: "#",
-                          price: -1,
-                        ),
-                  ),
-                )
-                .toList(),
-      ),
-      bottomNavigationBar: _RouteButtons(components: selecionados),
+      body:
+          seleccionados.isEmpty
+              ? Center(child: CircularProgressIndicator(strokeWidth: 2))
+              : ListView(
+                scrollDirection: Axis.vertical,
+                children:
+                    seleccionados
+                        .where((sel) => sel != null)
+                        .map(
+                          (sel) => _Card(
+                            component:
+                                sel ??
+                                Component(
+                                  id: '-1',
+                                  name: "No Seleccionado",
+                                  link: "#",
+                                  image: "#",
+                                  price: -1,
+                                ),
+                          ),
+                        )
+                        .toList(),
+              ),
+      bottomNavigationBar: _RouteButtons(components: seleccionados),
     );
   }
 }
@@ -62,20 +88,23 @@ class _Card extends StatelessWidget {
                 spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  
                   if (component.image.trim().isNotEmpty)
                     Image.network(
                       component.image,
                       width: 70,
                       height: 70,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 70),
+                      errorBuilder:
+                          (_, __, ___) =>
+                              const Icon(Icons.broken_image, size: 70),
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return const SizedBox(
                           width: 70,
                           height: 70,
-                          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                          child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
                         );
                       },
                     )
