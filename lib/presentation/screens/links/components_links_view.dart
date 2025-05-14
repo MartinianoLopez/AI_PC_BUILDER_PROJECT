@@ -28,6 +28,7 @@ class ComponentsLinks extends StatelessWidget {
                           id: '-1',
                           name: "No Seleccionado",
                           link: "#",
+                          image: "#",
                           price: -1,
                         ),
                   ),
