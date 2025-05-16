@@ -8,8 +8,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ai_pc_builder_project/core/providers/user_configuration_storage.dart';
 
 class ComponenetsView extends StatefulWidget {
-  const ComponenetsView({super.key, required this.initialBudget});
+  const ComponenetsView({
+    super.key,
+    required this.initialBudget,
+    this.editId,
+    this.configName,
+  });
+
   final int initialBudget;
+  final String? editId; // ID del documento en Firestore (armado)
+  final String? configName; // nombre actual del armado (si ya existía)
 
   @override
   State<ComponenetsView> createState() => _ComponentsViewState();
@@ -215,13 +223,17 @@ class _RouteButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screen = context.findAncestorWidgetOfExactType<ComponenetsView>();
+    final isEditing = screen?.editId != null;
+    String? currentName = screen?.configName;
+
     return Container(
       padding: const EdgeInsets.all(12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ElevatedButton(
-            child: const Text('Guardar'),
+            child: Text(isEditing ? 'Actualizar' : 'Guardar'),
             onPressed: () async {
               final provider = Provider.of<ComponentsProvider>(
                 context,
@@ -236,49 +248,67 @@ class _RouteButtons extends StatelessWidget {
                 return;
               }
 
-              String configName = '';
-              await showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Nombre del armado'),
-                    content: TextField(
-                      autofocus: true,
-                      onChanged: (value) {
-                        configName = value;
-                      },
-                      decoration: const InputDecoration(
-                        hintText: "Ej: Mi PC gamer",
+              // Pedimos nombre solo si no vino uno existente
+              if (currentName?.trim().isEmpty ?? true) {
+                await showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Nombre del armado'),
+                      content: TextField(
+                        autofocus: true,
+                        onChanged: (value) {
+                          currentName = value;
+                        },
+                        decoration: const InputDecoration(
+                          hintText: "Ej: Mi PC gamer",
+                        ),
                       ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancelar'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Guardar'),
-                      ),
-                    ],
-                  );
-                },
-              );
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancelar'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Guardar'),
+                        ),
+                      ],
+                    );
+                  },
+                );
 
-              if (configName.trim().isEmpty) return;
+                if (currentName!.trim().isEmpty) return;
+              }
 
               try {
                 final storage = UserConfigurationStorage();
-                await storage.saveConfiguration(
-                  uid: uid,
-                  configName: configName.trim(),
-                  total: provider.total,
-                  seleccionados: provider.seleccionados,
-                );
+
+                if (isEditing) {
+                  await storage.updateConfiguration(
+                    uid: uid,
+                    docId: screen!.editId!,
+                    configName: currentName!.trim(),
+                    total: provider.total,
+                    seleccionados: provider.seleccionados,
+                  );
+                } else {
+                  await storage.saveConfiguration(
+                    uid: uid,
+                    configName: currentName!.trim(),
+                    total: provider.total,
+                    seleccionados: provider.seleccionados,
+                  );
+                }
+
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('✅ Armado guardado con éxito'),
+                    SnackBar(
+                      content: Text(
+                        isEditing
+                            ? '✅ Armado actualizado'
+                            : '✅ Armado guardado',
+                      ),
                     ),
                   );
                 }
@@ -294,19 +324,9 @@ class _RouteButtons extends StatelessWidget {
 
           Row(
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  // acción AMD
-                },
-                child: const Text('PC AMD'),
-              ),
+              ElevatedButton(onPressed: () {}, child: const Text('PC AMD')),
               const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  // acción Intel
-                },
-                child: const Text('PC Intel'),
-              ),
+              ElevatedButton(onPressed: () {}, child: const Text('PC Intel')),
             ],
           ),
 

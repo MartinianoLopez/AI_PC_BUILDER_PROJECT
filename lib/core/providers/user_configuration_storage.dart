@@ -10,7 +10,10 @@ class UserConfigurationStorage {
     required double total,
     required List<Component?> seleccionados,
   }) async {
-    final armadosRef = _firestore.collection('users').doc(uid).collection('armados');
+    final armadosRef = _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('armados');
 
     // Validar límite de 10 armados
     final snapshot = await armadosRef.get();
@@ -19,17 +22,20 @@ class UserConfigurationStorage {
     }
 
     // Convertir componentes a JSON completo (preservando campos de Firebase)
-    final componentes = seleccionados
-        .where((c) => c != null)
-        .map((c) => {
-              'id': c!.id,
-              'titulo': c.name,
-              'precio': c.price,
-              'imagen': c.image,
-              'enlace': c.link,
-              // Extras si tenés: categoría, tienda, etc.
-            })
-        .toList();
+    final componentes =
+        seleccionados
+            .where((c) => c != null)
+            .map(
+              (c) => {
+                'id': c!.id,
+                'titulo': c.name,
+                'precio': c.price,
+                'imagen': c.image,
+                'enlace': c.link,
+                // Extras si tenés: categoría, tienda, etc.
+              },
+            )
+            .toList();
 
     // Crear documento
     final data = {
@@ -42,26 +48,71 @@ class UserConfigurationStorage {
     await armadosRef.add(data);
   }
 
-  Future<List<Map<String, dynamic>>> getUserConfigurations(String uid) async {
-  final snapshot = await _firestore
-      .collection('users')
-      .doc(uid)
-      .collection('armados')
-      .orderBy('date', descending: true)
-      .get();
+  Future<void> deleteConfiguration({
+    required String uid,
+    required String docId,
+  }) async {
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('armados')
+        .doc(docId)
+        .delete();
+  }
 
-  return snapshot.docs.map((doc) {
-    final data = doc.data();
-    return {
-      'id': doc.id,
-      'name': data['name'],
-      'total': data['total'],
-      'componentes': data['componentes'] ?? [],
+  Future<void> updateConfiguration({
+    required String uid,
+    required String docId,
+    required String configName,
+    required double total,
+    required List<Component?> seleccionados,
+  }) async {
+    final componentes =
+        seleccionados
+            .where((c) => c != null)
+            .map(
+              (c) => {
+                'id': c!.id,
+                'titulo': c.name,
+                'precio': c.price,
+                'imagen': c.image,
+                'enlace': c.link,
+              },
+            )
+            .toList();
+
+    final data = {
+      'name': configName,
+      'total': total,
+      'date': DateTime.now().toIso8601String(),
+      'componentes': componentes,
     };
-  }).toList();
-}
 
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('armados')
+        .doc(docId)
+        .set(data);
+  }
 
+  Future<List<Map<String, dynamic>>> getUserConfigurations(String uid) async {
+    final snapshot =
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .collection('armados')
+            .orderBy('date', descending: true)
+            .get();
 
-
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return {
+        'id': doc.id,
+        'name': data['name'],
+        'total': data['total'],
+        'componentes': data['componentes'] ?? [],
+      };
+    }).toList();
+  }
 }

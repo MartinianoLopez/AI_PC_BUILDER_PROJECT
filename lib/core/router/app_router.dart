@@ -26,13 +26,19 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ComponentsLinks(),
     ),
 
-    GoRoute(
-      path: '/components',
-      builder: (context, state) {
-        final budget = state.extra as int?;
-        return ComponenetsView(initialBudget: budget ?? 0);
-      },
-    ),
+   GoRoute(
+  path: '/components',
+  builder: (context, state) {
+    final args = state.extra as Map<String, dynamic>?;
+
+    return ComponenetsView(
+      initialBudget: args?['budget'] ?? 0,
+      editId: args?['editId'],
+      configName: args?['name'],
+    );
+  },
+),
+
 
     GoRoute(
       path: '/testing',

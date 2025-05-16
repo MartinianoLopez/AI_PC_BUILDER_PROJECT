@@ -107,7 +107,10 @@ class _MainBodyState extends State<_MainBody> {
     );
     componentsProvider.createArmado(budget: budget);
 
-    context.push('/components', extra: budget);
+    context.push('/components', extra: {
+  'budget': budget,
+});
+
   }
 
   @override
@@ -170,37 +173,92 @@ class _MainBodyState extends State<_MainBody> {
                   final config = savedConfigurations[index];
                   final name = config['name'] ?? 'Sin nombre';
                   final total = config['total'] ?? 0;
+                  final docId =
+                      config['id']; // <-- importante para editar/borrar
 
-                  return ListTile(
-                    leading: const Icon(Icons.computer),
-                    title: Text(name),
-                    subtitle: Text(
-                      'Total: \$${NumberFormat("#,##0", "es_AR").format(total)}',
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
                     ),
-                    onTap: () async {
-                      final provider = Provider.of<ComponentsProvider>(
-                        context,
-                        listen: false,
-                      );
-                      List<Component> componentesGuardados =
-                          List<Component>.from(
-                            (config['componentes'] as List)
-                                .where((comp) => comp != null)
-                                .map(
-                                  (comp) => Component(
-                                    id: comp['id'] ?? '-1',
-                                    name: comp['titulo'] ?? "No seleccionado",
-                                    link: comp['enlace'] ?? "#",
-                                    price: comp['precio'] ?? 0,
-                                    image: comp['imagen'] ?? "#",
-                                  ),
-                                )
-                                .toList(),
-                          );
+                    child: ListTile(
+                      leading: const Icon(Icons.computer),
+                      title: Text(name),
+                      subtitle: Text(
+                        'Total: \$${NumberFormat("#,##0", "es_AR").format(total)}',
+                      ),
+                      
+                        trailing: Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    IconButton(
+      icon: const Icon(Icons.link),
+      tooltip: 'Ver links',
+      onPressed: () {
+        final provider = Provider.of<ComponentsProvider>(context, listen: false);
+        List<Component> componentesGuardados = List<Component>.from(
+          (config['componentes'] as List).where((c) => c != null).map(
+                (c) => Component(
+                  id: c['id'] ?? '-1',
+                  name: c['titulo'] ?? 'No seleccionado',
+                  price: c['precio'] ?? 0,
+                  image: c['imagen'] ?? '#',
+                  link: c['enlace'] ?? '#',
+                ),
+              ),
+        );
 
-                      provider.setAllSelected(componentesGuardados);
-                      context.push('/links');
-                    },
+        provider.setAllSelected(componentesGuardados);
+        context.push('/links');
+      },
+    ),
+    IconButton(
+      icon: const Icon(Icons.edit),
+      tooltip: 'Editar armado',
+      onPressed: () async {
+        final provider = Provider.of<ComponentsProvider>(context, listen: false);
+        List<Component> componentesGuardados = List<Component>.from(
+          (config['componentes'] as List).where((c) => c != null).map(
+                (c) => Component(
+                  id: c['id'] ?? '-1',
+                  name: c['titulo'] ?? 'No seleccionado',
+                  price: c['precio'] ?? 0,
+                  image: c['imagen'] ?? '#',
+                  link: c['enlace'] ?? '#',
+                ),
+              ),
+        );
+
+        provider.setAllSelected(componentesGuardados);
+
+        context.push(
+          '/components',
+          extra: {
+            'budget': total,
+            'editId': docId,
+            'name': name,
+          },
+        );
+      },
+    ),
+    IconButton(
+      icon: const Icon(Icons.delete),
+      tooltip: 'Eliminar armado',
+      onPressed: () async {
+        final uid = FirebaseAuth.instance.currentUser?.uid;
+        if (uid == null || docId == null) return;
+
+        await UserConfigurationStorage().deleteConfiguration(uid: uid, docId: docId);
+        setState(() {
+          savedConfigurations.removeAt(index);
+        });
+      },
+    ),
+  ],
+),
+
+
+                    ),
                   );
                 },
               ),
