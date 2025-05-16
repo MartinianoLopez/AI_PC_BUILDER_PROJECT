@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +15,37 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   bool _showVerifyButton = false;
+  
+   void _loginConEnv() async { // para hacer pruebas
+    final email = dotenv.env['EMAIL']?? "";
+    final password = dotenv.env['PASSWORD']?? "";
+
+    try {
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+
+      final isVerified = userCredential.user?.emailVerified ?? false;
+
+      if (isVerified) {
+        if (!mounted) return;
+        context.go('/home');
+      } else {
+        setState(() {
+          _showVerifyButton = true;
+        });
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Verificá tu email antes de ingresar'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al iniciar sesión: ${e.message}')),
+      );
+    }
+  }
 
   void _login() async {
     final email = emailController.text.trim();
@@ -129,7 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     OutlinedButton(
                       onPressed: () {
                         context.go('/registration');
-                        // En el futuro: registro de usuario nuevo
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
@@ -159,6 +190,17 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _loginConEnv();
+        },
+        child: Text("Testing"),
+      ),
     );
   }
 }
+
+
+
+
+
