@@ -1,9 +1,8 @@
 // ignore_for_file: avoid_print
-
+import 'package:ai_pc_builder_project/core/services/generador_de_rangos.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/services/firebase_components_service.dart';
-import 'dart:convert';
 
 class ComponentsProvider with ChangeNotifier {
   List<List<Component>> armado = [];
@@ -19,44 +18,12 @@ class ComponentsProvider with ChangeNotifier {
 
   Future<void> createArmado({required int budget}) async {
     if (_cargado) return;
-
     _isLoading = true;
     notifyListeners();
 
+    final rangos = generarRangos(budget.toDouble());
+
     try {
-      // intente generar el rango con ia, pero no genera bien y tiene muchos errores, creo que es mejor calcularlo nosotros segun la distribucion promedio y un factor de tolerancia
-      //por ejemplo 30 porciento para el procesador 20 para la mother y 40 % de tolerancia.
-
-      final response = '''
-      {
-        "procesador_amd": {"min": 50000.0, "max": 150000.0},
-        "procesador_intel": {"min": 50000.0, "max": 150000.0},
-        "motherboard_amd": {"min": 30000.0, "max": 100000.0},
-        "motherboard_intel": {"min": 30000.0, "max": 100000.0},
-        "memoria_ram": {"min": 40000.0, "max": 50000.0},
-        "ssd": {"min": 20000.0, "max": 50000.0},
-        "placa_video": {"min": 70000.0, "max": 250000.0},
-        "gabinete": {"min": 15000.0, "max": 40000.0},
-        "fuente": {"min": 20000.0, "max": 60000.0}
-      }
-      ''';
-
-      final decoded = jsonDecode(response);
-
-      //  Generamos los rangos esperados
-      final Map<String, Map<String, double>> rangos = {};
-      decoded.forEach((key, value) {
-        if (value is Map<String, dynamic> &&
-            value.containsKey('min') &&
-            value.containsKey('max')) {
-          rangos[key] = {
-            'min': (value['min'] as num).toDouble(),
-            'max': (value['max'] as num).toDouble(),
-          };
-        }
-      });
-
-      //  Usamos esos rangos para pedir los componentes
       final data = await fetchComponentsFromFirestore(rangos);
 
       final orden = [

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:flutter/material.dart';
