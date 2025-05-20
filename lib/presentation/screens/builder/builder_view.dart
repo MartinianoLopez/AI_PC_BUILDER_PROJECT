@@ -1,5 +1,6 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
+import 'package:ai_pc_builder_project/core/services/checkCompatibilityWithAI.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -360,6 +361,62 @@ class _RouteButtons extends StatelessWidget {
                 );
 
                 if (continuar != true) return;
+              }
+              //
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder:
+                    (_) => AlertDialog(
+                      content: Row(
+                        children: const [
+                          CircularProgressIndicator(),
+                          SizedBox(width: 20),
+                          Expanded(
+                            child: Text("Analizando compatibilidad con IA..."),
+                          ),
+                        ],
+                      ),
+                    ),
+              );
+              final iaWarning = await checkCompatibilityWithAI(
+                provider.seleccionados.whereType<Component>().toList(),
+              );
+
+              Navigator.of(context).pop();
+              print("📩 Respuesta IA: $iaWarning");
+
+              // ✅ Mostrar advertencia aunque no haya errores críticos
+              if (iaWarning != null && iaWarning.trim().isNotEmpty) {
+                final continuarIA = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        title: Row(
+                          children: const [
+                            Icon(Icons.info_outline, color: Colors.green),
+                            SizedBox(width: 8),
+                            Text('Verificación IA'),
+                          ],
+                        ),
+                        content: Text(
+                          iaWarning,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Seguir editando'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('Guardar de todos modos'),
+                          ),
+                        ],
+                      ),
+                );
+
+                if (continuarIA != true) return;
               }
 
               try {
