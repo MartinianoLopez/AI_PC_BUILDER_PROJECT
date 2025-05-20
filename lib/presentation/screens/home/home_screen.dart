@@ -59,56 +59,69 @@ class MainBodyState extends State<_MainBody> {
   }
 
   void solicitudDeIngresoAlArmador(String inputBudget, BuildContext context) {
-  final int budget = int.tryParse(inputBudget) ?? 0;
+    final int budget = int.tryParse(inputBudget) ?? 0;
 
-  if (budget < 399999) {
-    _mostrarAlerta(
-      context,
-      titulo: 'Presupuesto insuficiente',
-      mensaje: 'El mínimo para hacer una PC completa es \$400.000.',
-      budgetSugerido: 400000,
-    );
-    return;
+    if (budget < 399999) {
+      _mostrarAlerta(
+        context,
+        titulo: 'Presupuesto insuficiente',
+        mensaje: 'El mínimo para hacer una PC completa es \$400.000.',
+        budgetSugerido: 400000,
+      );
+      return;
+    }
+
+    if (budget > 5000001) {
+      _mostrarAlerta(
+        context,
+        titulo: 'Presupuesto excedido',
+        mensaje: 'El presupuesto máximo es \$5.000.000.',
+        budgetSugerido: 5000000,
+      );
+      return;
+    }
+
+    context.push('/components', extra: {'budget': budget});
   }
 
-  if (budget > 5000001) {
-    _mostrarAlerta(
-      context,
-      titulo: 'Presupuesto excedido',
-      mensaje: 'El presupuesto máximo es \$5.000.000.',
-      budgetSugerido: 5000000,
+  void _mostrarAlerta(
+    BuildContext context, {
+    required String titulo,
+    required String mensaje,
+    required int budgetSugerido,
+  }) {
+    showDialog(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              titulo,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(mensaje, style: const TextStyle(fontSize: 16)),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Volver'),
+              ),
+              TextButton(
+                onPressed:
+                    () => context.push(
+                      '/components',
+                      extra: {'budget': budgetSugerido},
+                    ),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          ),
     );
-    return;
   }
-
-  context.push('/components', extra: {'budget': budget});
-}
-
-void _mostrarAlerta(BuildContext context,
-    {required String titulo, required String mensaje, required int budgetSugerido}) {
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
-      content: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Text(mensaje, style: const TextStyle(fontSize: 16)),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Volver'),
-        ),
-        TextButton(
-          onPressed: () => context.push('/components', extra: {'budget': budgetSugerido}),
-          child: const Text('Aceptar'),
-        ),
-      ],
-    ),
-  );
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -155,9 +168,6 @@ void _mostrarAlerta(BuildContext context,
               ),
               const SizedBox(height: 30),
 
-
-
-
               // ⬇️ Acá van tus configuraciones guardadas
               const Text(
                 'Tus Armados Guardados:',
@@ -187,7 +197,7 @@ void _mostrarAlerta(BuildContext context,
                       subtitle: Text(
                         'Total: \$${NumberFormat("#,##0", "es_AR").format(total)}',
                       ),
-                      
+
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -195,9 +205,15 @@ void _mostrarAlerta(BuildContext context,
                             icon: const Icon(Icons.link),
                             tooltip: 'Ver links',
                             onPressed: () {
-                              final provider = Provider.of<ComponentsProvider>(context, listen: false);
-                              List<Component> componentesGuardados = List<Component>.from(
-                                (config['componentes'] as List).where((c) => c != null).map(
+                              final provider = Provider.of<ComponentsProvider>(
+                                context,
+                                listen: false,
+                              );
+                              List<Component>
+                              componentesGuardados = List<Component>.from(
+                                (config['componentes'] as List)
+                                    .where((c) => c != null)
+                                    .map(
                                       (c) => Component(
                                         id: c['id'] ?? '-1',
                                         name: c['titulo'] ?? 'No seleccionado',
@@ -216,9 +232,42 @@ void _mostrarAlerta(BuildContext context,
                             icon: const Icon(Icons.edit),
                             tooltip: 'Editar armado',
                             onPressed: () async {
-                              final provider = Provider.of<ComponentsProvider>(context, listen: false);
-                              List<Component> componentesGuardados = List<Component>.from(
-                                (config['componentes'] as List).where((c) => c != null).map(
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder:
+                                    (context) => AlertDialog(
+                                      title: const Text('Confirmar edición'),
+                                      content: const Text(
+                                        '¿Estás seguro de que querés modificar este armado?',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, false),
+                                          child: const Text('Cancelar'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, true),
+                                          child: const Text('Sí, modificar'),
+                                        ),
+                                      ],
+                                    ),
+                              );
+
+                              if (confirm != true) return;
+
+                              final provider = Provider.of<ComponentsProvider>(
+                                context,
+                                listen: false,
+                              );
+                              List<Component>
+                              componentesGuardados = List<Component>.from(
+                                (config['componentes'] as List)
+                                    .where((c) => c != null)
+                                    .map(
                                       (c) => Component(
                                         id: c['id'] ?? '-1',
                                         name: c['titulo'] ?? 'No seleccionado',
@@ -245,10 +294,42 @@ void _mostrarAlerta(BuildContext context,
                             icon: const Icon(Icons.delete),
                             tooltip: 'Eliminar armado',
                             onPressed: () async {
-                              final uid = FirebaseAuth.instance.currentUser?.uid;
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder:
+                                    (context) => AlertDialog(
+                                      title: const Text('Eliminar armado'),
+                                      content: const Text(
+                                        '¿Estás seguro de que querés eliminar este armado? Esta acción no se puede deshacer.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, false),
+                                          child: const Text('Cancelar'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, true),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                          ),
+                                          child: const Text('Eliminar'),
+                                        ),
+                                      ],
+                                    ),
+                              );
+
+                              if (confirm != true) return;
+
+                              final uid =
+                                  FirebaseAuth.instance.currentUser?.uid;
                               if (uid == null || docId == null) return;
 
-                              await UserConfigurationStorage().deleteConfiguration(uid: uid, docId: docId);
+                              await UserConfigurationStorage()
+                                  .deleteConfiguration(uid: uid, docId: docId);
                               setState(() {
                                 savedConfigurations.removeAt(index);
                               });
