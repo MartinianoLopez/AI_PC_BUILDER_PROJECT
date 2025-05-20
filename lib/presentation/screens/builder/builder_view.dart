@@ -284,6 +284,84 @@ class _RouteButtons extends StatelessWidget {
                 if (currentName!.trim().isEmpty) return;
               }
 
+              final initialBudget = screen?.initialBudget ?? 0;
+              final total = provider.total;
+              final formatter = NumberFormat("#,##0", "es_AR");
+
+              // ⚠️ Advertencia: excede el presupuesto
+              if (total > initialBudget) {
+                final continuar = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: Row(
+                          children: const [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.orange,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Presupuesto superado',
+                              style: TextStyle(color: Colors.orange),
+                            ),
+                          ],
+                        ),
+                        content: Text(
+                          'El armado cuesta \$${formatter.format(total)}, pero ingresaste un presupuesto de \$${formatter.format(initialBudget)}.\n\n¿Deseás continuar de todos modos?',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Cancelar'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('Sí, continuar'),
+                          ),
+                        ],
+                      ),
+                );
+
+                if (continuar != true) return;
+              }
+              // 🟡 Advertencia: estás muy por debajo del presupuesto (menos del 70%)
+              else if (total < initialBudget * 0.7) {
+                final continuar = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: Row(
+                          children: const [
+                            Icon(Icons.info_outline, color: Colors.blue),
+                            SizedBox(width: 8),
+                            Text(
+                              'Presupuesto subutilizado',
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ],
+                        ),
+                        content: Text(
+                          'Tu armado cuesta solo \$${formatter.format(total)} de los \$${formatter.format(initialBudget)} disponibles.\n\n¿Deseás continuar igualmente?',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Cancelar'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('Sí, continuar'),
+                          ),
+                        ],
+                      ),
+                );
+
+                if (continuar != true) return;
+              }
+
               try {
                 final storage = UserConfigurationStorage();
 
