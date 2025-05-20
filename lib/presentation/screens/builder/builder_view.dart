@@ -172,7 +172,10 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                     value: currentValue,
                     min: 0,
                     max: widget.component.length - 1,
-                    divisions: widget.component.length - 1,
+                    divisions:
+                        (widget.component.length > 1)
+                            ? widget.component.length - 1
+                            : null,
                     onChanged: (value) {
                       setState(() {
                         currentValue = value;
