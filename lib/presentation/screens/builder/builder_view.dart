@@ -35,8 +35,8 @@ class _ComponentsViewState extends State<ComponenetsView> {
     super.initState();
     budget = widget.initialBudget;
 
-     WidgetsBinding.instance.addPostFrameCallback((_) {
-    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ComponentsProvider>(context, listen: false);
       provider.createArmado(budget: budget);
     });
 
@@ -78,9 +78,7 @@ class _ComponentsViewState extends State<ComponenetsView> {
       body:
           provider.isLoading
               ? const Center(child: CircularProgressIndicator())
-              : BuilderView(
-                components: provider.armado,
-              ),
+              : BuilderView(components: provider.armado),
 
       bottomNavigationBar: const _RouteButtons(),
     );
@@ -90,10 +88,7 @@ class _ComponentsViewState extends State<ComponenetsView> {
 class BuilderView extends StatelessWidget {
   final List<List<Component>> components;
 
-  const BuilderView({
-    super.key,
-    required this.components,
-  });
+  const BuilderView({super.key, required this.components});
 
   @override
   Widget build(BuildContext context) {
@@ -161,14 +156,20 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                     children: [
                       Text(
                         component.name,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Slider(
                         value: currentValue,
                         min: 0,
                         max: widget.component.length - 1,
-                        divisions: (widget.component.length > 1) ? widget.component.length - 1 : null,
+                        divisions:
+                            (widget.component.length > 1)
+                                ? widget.component.length - 1
+                                : null,
                         onChanged: (value) {
                           setState(() {
                             currentValue = value;
@@ -183,43 +184,74 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Column(
-                  children: [
-                    if (component.image == 'none')
-                      const Icon(Icons.block, size: 70)
-                    else if (component.image.trim().isNotEmpty)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          component.image,
-                          width: 70,
-                          height: 70,
-                          cacheWidth: 140,
-                          cacheHeight: 140,
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.high,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 70),
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const SizedBox(
-                              width: 70,
-                              height: 70,
-                              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                GestureDetector(
+                  onLongPress:
+                      () => {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(component.name),
+                              content: Text(
+                                "\$ ${component.price.toStringAsFixed(2)}",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("OK"),
+                                ),
+                              ],
                             );
                           },
                         ),
-                      )
-                    else
-                      const Icon(Icons.image_not_supported, size: 70),
-                    const SizedBox(height: 4),
-                    Text(
-                      formattedPrice,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
+                      },
+                  child: Column(
+                    children: [
+                      if (component.image == 'none')
+                        const Icon(Icons.block, size: 70)
+                      else if (component.image.trim().isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            component.image,
+                            width: 70,
+                            height: 70,
+                            cacheWidth: 140,
+                            cacheHeight: 140,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                            errorBuilder:
+                                (_, __, ___) =>
+                                    const Icon(Icons.broken_image, size: 70),
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const SizedBox(
+                                width: 70,
+                                height: 70,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      else
+                        const Icon(Icons.image_not_supported, size: 70),
+                      const SizedBox(height: 4),
+                      Text(
+                        formattedPrice,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,14 @@ class MainDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    Future<void> logOut() async {
+      try {
+        await FirebaseAuth.instance.signOut();
+        context.go('/');
+      } catch (e) {
+        print('Error al cerrar sesion $e');
+      }
+    }
 
     return Drawer(
       child: ListView(
@@ -47,6 +56,11 @@ class MainDrawer extends StatelessWidget {
             onTap: () => context.go('/test_image'),
           ),
           const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout_outlined),
+            title: const Text('Cerrar sesión'),
+            onTap: () => logOut(),
+          ),
           SwitchListTile(
             title: const Text("Modo oscuro"),
             secondary: Icon(
