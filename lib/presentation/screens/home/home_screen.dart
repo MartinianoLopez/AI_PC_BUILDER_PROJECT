@@ -198,7 +198,9 @@ class MainBodyState extends State<_MainBody> {
                     ),
                     child: ListTile(
                       leading: const Icon(Icons.computer),
-                      title: Text(name),
+                      //title: Text(name),
+                      title: Text('${_getPlatformPrefix(config['componentes'])} - $name'),
+
                       subtitle: Text(
                         'Total: \$${NumberFormat("#,##0", "es_AR").format(total)}',
                       ),
@@ -352,4 +354,18 @@ class MainBodyState extends State<_MainBody> {
       ),
     );
   }
+
+  String _getPlatformPrefix(List componentes) {
+  for (final c in componentes) {
+    final titulo = (c['titulo'] ?? '').toString().toLowerCase();
+    if (titulo.contains('amd') || titulo.contains('am4') || titulo.contains('am5')) {
+      return 'AMD';
+    }
+    if (titulo.contains('intel') || titulo.contains('1200') || titulo.contains('1700')) {
+      return 'Intel';
+    }
+  }
+  return 'Genérico';
+}
+
 }
