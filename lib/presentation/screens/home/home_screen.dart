@@ -111,13 +111,18 @@ class MainBodyState extends State<_MainBody> {
                 child: const Text('Volver'),
               ),
               TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Aceptar'),
+                        ),
+
+             /* TextButton(
                 onPressed:
                     () => context.push(
                       '/components',
                       extra: {'budget': budgetSugerido},
                     ),
                 child: const Text('Aceptar'),
-              ),
+              ),*/
             ],
           ),
     );
