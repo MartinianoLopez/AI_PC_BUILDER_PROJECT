@@ -89,7 +89,7 @@ class _Card extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (component.image == 'none')
-                  const Icon(Icons.block, size: 70),
+                    const Icon(Icons.block, size: 70),
                   if (component.image.trim().isNotEmpty)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
@@ -101,13 +101,17 @@ class _Card extends StatelessWidget {
                         cacheHeight: 140,
                         fit: BoxFit.cover,
                         filterQuality: FilterQuality.high,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 70),
+                        errorBuilder:
+                            (_, __, ___) =>
+                                const Icon(Icons.broken_image, size: 70),
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return const SizedBox(
                             width: 70,
                             height: 70,
-                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            child: Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
                           );
                         },
                       ),
@@ -168,12 +172,11 @@ class _RouteButtons extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ElevatedButton(onPressed: () {}, child: const Text('Guardar')),
           ElevatedButton(
             onPressed: () async {
               await Clipboard.setData(ClipboardData(text: links));
             },
-            child: const Text('Compartir'),
+            child: const Text('Copiar links de compra'),
           ),
         ],
       ),
