@@ -35,8 +35,10 @@ class _ComponentsViewState extends State<ComponenetsView> {
     super.initState();
     budget = widget.initialBudget;
 
+     WidgetsBinding.instance.addPostFrameCallback((_) {
     final provider = Provider.of<ComponentsProvider>(context, listen: false);
-    provider.createArmado(budget: budget);
+      provider.createArmado(budget: budget);
+    });
 
     _loadSavedConfigurations();
   }
@@ -386,7 +388,7 @@ class _RouteButtons extends StatelessWidget {
               );
               if (!context.mounted) return;
               Navigator.of(context).pop();
-              print("📩 Respuesta IA: $iaWarning");
+              //print("📩 Respuesta IA: $iaWarning");
 
               // ✅ Mostrar advertencia aunque no haya errores críticos
               if (iaWarning != null && iaWarning.trim().isNotEmpty) {
