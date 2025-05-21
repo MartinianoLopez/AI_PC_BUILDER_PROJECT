@@ -88,29 +88,32 @@ class _Card extends StatelessWidget {
                 spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (component.image == 'none')
+                  const Icon(Icons.block, size: 70),
                   if (component.image.trim().isNotEmpty)
-                    Image.network(
-                      component.image,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (_, __, ___) =>
-                              const Icon(Icons.broken_image, size: 70),
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        );
-                      },
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        component.image,
+                        width: 70,
+                        height: 70,
+                        cacheWidth: 140,
+                        cacheHeight: 140,
+                        fit: BoxFit.cover,
+                        filterQuality: FilterQuality.high,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 70),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const SizedBox(
+                            width: 70,
+                            height: 70,
+                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                          );
+                        },
+                      ),
                     )
                   else
                     const Icon(Icons.image_not_supported, size: 70),
-
                   Column(
                     children: [
                       SizedBox(

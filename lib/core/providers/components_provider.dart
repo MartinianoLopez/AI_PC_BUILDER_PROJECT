@@ -60,10 +60,10 @@ class ComponentsProvider with ChangeNotifier {
           final conPlaceholder = [
             Component(
               id: 'none',
-              name: 'Sin seleccionar',
+              name: '${titulosOrdenados[i]} - Sin seleccionar',
               link: '',
               price: 0,
-              image: "https://static.thenounproject.com/png/2222628-200.png",
+              image: 'none',
             ),
             ...list,
           ];

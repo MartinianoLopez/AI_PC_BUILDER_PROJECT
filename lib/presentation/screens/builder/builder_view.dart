@@ -64,12 +64,13 @@ class _ComponentsViewState extends State<ComponenetsView> {
       appBar: AppBar(
         title: Row(
           children: [
+            const Spacer(),
             Text('Presupuesto: \$${budget.toString()}'),
             const Spacer(),
             Text(
               'Total: \$${NumberFormat("#,##0", "es_AR").format(provider.total)}',
-              style: const TextStyle(fontSize: 16),
             ),
+            const Spacer(),
           ],
         ),
       ),
@@ -79,7 +80,6 @@ class _ComponentsViewState extends State<ComponenetsView> {
               ? const Center(child: CircularProgressIndicator())
               : BuilderView(
                 components: provider.armado,
-                titulos: provider.titulos,
               ),
 
       bottomNavigationBar: const _RouteButtons(),
@@ -89,12 +89,10 @@ class _ComponentsViewState extends State<ComponenetsView> {
 
 class BuilderView extends StatelessWidget {
   final List<List<Component>> components;
-  final List<String> titulos;
 
   const BuilderView({
     super.key,
     required this.components,
-    required this.titulos,
   });
 
   @override
@@ -105,16 +103,6 @@ class BuilderView extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                titulos[index],
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             _ComponentSlider(component: components[index], index: index),
           ],
         );
@@ -149,12 +137,12 @@ class _ComponentSliderState extends State<_ComponentSlider> {
   Widget build(BuildContext context) {
     if (widget.component.isEmpty) return const SizedBox();
     final provider = Provider.of<ComponentsProvider>(context);
-    final comp = widget.component[currentValue.toInt()];
+    final component = widget.component[currentValue.toInt()];
     final formattedPrice = NumberFormat.currency(
       locale: 'es_AR',
       symbol: '\$',
       decimalDigits: 2,
-    ).format(comp.price);
+    ).format(component.price);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -163,51 +151,69 @@ class _ComponentSliderState extends State<_ComponentSlider> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              comp.name,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Slider(
-                    value: currentValue,
-                    min: 0,
-                    max: widget.component.length - 1,
-                    divisions:
-                        (widget.component.length > 1)
-                            ? widget.component.length - 1
-                            : null,
-                    onChanged: (value) {
-                      setState(() {
-                        currentValue = value;
-                      });
-                      provider.setSelected(
-                        widget.index,
-                        widget.component[value.toInt()],
-                      );
-                    },
+                  // Para que el slider y texto tengan espacio flexible
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        component.name,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Slider(
+                        value: currentValue,
+                        min: 0,
+                        max: widget.component.length - 1,
+                        divisions: (widget.component.length > 1) ? widget.component.length - 1 : null,
+                        onChanged: (value) {
+                          setState(() {
+                            currentValue = value;
+                          });
+                          provider.setSelected(
+                            widget.index,
+                            widget.component[value.toInt()],
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
+                const SizedBox(width: 12),
                 Column(
                   children: [
-                    if (comp.image != "")
+                    if (component.image == 'none')
+                      const Icon(Icons.block, size: 70)
+                    else if (component.image.trim().isNotEmpty)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          comp.image,
+                          component.image,
                           width: 70,
                           height: 70,
+                          cacheWidth: 140,
+                          cacheHeight: 140,
                           fit: BoxFit.cover,
-                          errorBuilder:
-                              (_, __, ___) =>
-                                  const Icon(Icons.broken_image, size: 40),
+                          filterQuality: FilterQuality.high,
+                          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 70),
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const SizedBox(
+                              width: 70,
+                              height: 70,
+                              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            );
+                          },
                         ),
-                      ),
+                      )
+                    else
+                      const Icon(Icons.image_not_supported, size: 70),
                     const SizedBox(height: 4),
                     Text(
-                      'Precio: $formattedPrice',
+                      formattedPrice,
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,
