@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-Future<String?> checkCompatibilityWithAI(List<Component> components) async {
+checkCompatibilityWithAI(List<Component> components) async {
   final apiKey = dotenv.env['OPENAI_API_KEY'];
 
   if (apiKey == null) {

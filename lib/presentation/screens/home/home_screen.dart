@@ -265,7 +265,7 @@ class MainBodyState extends State<_MainBody> {
                               );
 
                               if (confirm != true) return;
-
+                              if (!context.mounted) return;
                               final provider = Provider.of<ComponentsProvider>(
                                 context,
                                 listen: false,
@@ -286,7 +286,7 @@ class MainBodyState extends State<_MainBody> {
                               );
 
                               provider.setAllSelected(componentesGuardados);
-
+                              if (!context.mounted) return;
                               context.push(
                                 '/components',
                                 extra: {

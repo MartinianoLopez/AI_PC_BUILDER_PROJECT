@@ -1,6 +1,6 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
-import 'package:ai_pc_builder_project/core/services/checkCompatibilityWithAI.dart';
+import 'package:ai_pc_builder_project/core/services/check_compatibility_with_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -291,6 +291,7 @@ class _RouteButtons extends StatelessWidget {
 
               // ⚠️ Advertencia: excede el presupuesto
               if (total > initialBudget) {
+                if (!context.mounted) return;
                 final continuar = await showDialog<bool>(
                   context: context,
                   builder:
@@ -329,6 +330,7 @@ class _RouteButtons extends StatelessWidget {
               }
               // 🟡 Advertencia: estás muy por debajo del presupuesto (menos del 70%)
               else if (total < initialBudget * 0.7) {
+                if (!context.mounted) return;
                 final continuar = await showDialog<bool>(
                   context: context,
                   builder:
@@ -362,7 +364,7 @@ class _RouteButtons extends StatelessWidget {
 
                 if (continuar != true) return;
               }
-              //
+              if (!context.mounted) return;
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -382,12 +384,13 @@ class _RouteButtons extends StatelessWidget {
               final iaWarning = await checkCompatibilityWithAI(
                 provider.seleccionados.whereType<Component>().toList(),
               );
-
+              if (!context.mounted) return;
               Navigator.of(context).pop();
               print("📩 Respuesta IA: $iaWarning");
 
               // ✅ Mostrar advertencia aunque no haya errores críticos
               if (iaWarning != null && iaWarning.trim().isNotEmpty) {
+                if (!context.mounted) return;
                 final continuarIA = await showDialog<bool>(
                   context: context,
                   builder:
