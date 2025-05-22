@@ -10,15 +10,14 @@ class ComponentsProvider with ChangeNotifier {
   List<Component?> seleccionados = [];
 
   bool _cargado = false;
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool isLoading = false;
 
   double get total =>
       seleccionados.fold(0.0, (sum, comp) => sum + (comp?.price ?? 0));
 
   Future<void> createArmado({required int budget}) async {
     if (_cargado) return;
-    _isLoading = true;
+    isLoading = true;
     notifyListeners();
 
     final rangos = generarRangos(budget.toDouble());
@@ -82,8 +81,7 @@ class ComponentsProvider with ChangeNotifier {
     } catch (e) {
       print("❌ Error al crear armado: $e");
     }
-
-    _isLoading = false;
+    isLoading = false;
     notifyListeners();
   }
 
@@ -92,11 +90,13 @@ class ComponentsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  int getSelectedIndex(int index) {
-    final selected = seleccionados[index];
+  int getSelected(int posicion) {
+    final selected = seleccionados[posicion];
     if (selected == null) return 0;
-    return armado[index].indexWhere((c) => c.id == selected.id);
+    final index = armado[posicion].indexWhere((c) => c.id == selected.id);
+    return index >= 0 ? index : 0; // evitar -1 porque genera un range error
   }
+
 
   void setAllSelected(List<Component?> newSeleccionados) {
   if (newSeleccionados.length != seleccionados.length) {

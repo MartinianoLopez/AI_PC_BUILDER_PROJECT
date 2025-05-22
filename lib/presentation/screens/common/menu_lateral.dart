@@ -13,6 +13,7 @@ class MainDrawer extends StatelessWidget {
     Future<void> logOut() async {
       try {
         await FirebaseAuth.instance.signOut();
+        if (!context.mounted) return;
         context.go('/');
       } catch (e) {
         print('Error al cerrar sesion $e');

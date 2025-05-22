@@ -33,8 +33,8 @@ final GoRouter appRouter = GoRouter(
 
     return ComponenetsView(
       initialBudget: args?['budget'] ?? 0,
-      editId: args?['editId'],
-      configName: args?['name'],
+      idArmado: args?['editId'],
+      nombreArmado: args?['name'],
     );
   },
 ),

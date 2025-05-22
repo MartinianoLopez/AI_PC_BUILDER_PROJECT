@@ -13,20 +13,19 @@ class ComponenetsView extends StatefulWidget {
   const ComponenetsView({
     super.key,
     required this.initialBudget,
-    this.editId,
-    this.configName,
+    this.idArmado,
+    this.nombreArmado,
   });
 
   final int initialBudget;
-  final String? editId; // ID del documento en Firestore (armado)
-  final String? configName; // nombre actual del armado (si ya existía)
+  final String? idArmado; // ID del documento en Firestore (armado)
+  final String? nombreArmado; // nombre actual del armado (si ya existía)
 
   @override
   State<ComponenetsView> createState() => _ComponentsViewState();
 }
 
 class _ComponentsViewState extends State<ComponenetsView> {
-  List<Map<String, dynamic>> savedConfigurations = [];
   bool loadingSaved = true;
 
   late int budget;
@@ -40,21 +39,7 @@ class _ComponentsViewState extends State<ComponenetsView> {
       final provider = Provider.of<ComponentsProvider>(context, listen: false);
       provider.createArmado(budget: budget);
     });
-
-    _loadSavedConfigurations();
-  }
-
-  void _loadSavedConfigurations() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-
-    final storage = UserConfigurationStorage();
-    final configs = await storage.getUserConfigurations(uid);
-
-    setState(() {
-      savedConfigurations = configs;
-      loadingSaved = false;
-    });
+    
   }
 
   @override
@@ -96,11 +81,10 @@ class BuilderView extends StatelessWidget {
     return ListView.builder(
       itemCount: components.length,
       itemBuilder: (context, index) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ComponentSlider(component: components[index], index: index),
-          ],
+        final currentComponents = components[index];
+        return _ComponentSlider(
+          components: currentComponents,
+          posicion: index,
         );
       },
     );
@@ -108,32 +92,38 @@ class BuilderView extends StatelessWidget {
 }
 
 class _ComponentSlider extends StatefulWidget {
-  const _ComponentSlider({required this.component, required this.index});
-  final List<Component> component;
-  final int index;
+  const _ComponentSlider({
+    required this.components,
+    required this.posicion,
+  });
+
+  final List<Component> components;
+  final int posicion;
 
   @override
   State<_ComponentSlider> createState() => _ComponentSliderState();
 }
 
 class _ComponentSliderState extends State<_ComponentSlider> {
-  double currentValue = 0;
+  double currentPosition = 0;
 
   @override
   void initState() {
     super.initState();
     final provider = Provider.of<ComponentsProvider>(context, listen: false);
-    final selectedIndex = provider.getSelectedIndex(widget.index);
-    setState(() {
-      currentValue = selectedIndex.toDouble();
-    });
+    final selectedIndex = provider.getSelected(widget.posicion);
+
+    currentPosition = (selectedIndex >= 0 && selectedIndex < widget.components.length) //verifica que este dentro del rango para evitar errores
+        ? selectedIndex.toDouble()
+        : 0;
   }
+
 
   @override
   Widget build(BuildContext context) {
-    if (widget.component.isEmpty) return const SizedBox();
+    if (widget.components.isEmpty) return const SizedBox();
     final provider = Provider.of<ComponentsProvider>(context);
-    final component = widget.component[currentValue.toInt()];
+    final component = widget.components[currentPosition.toInt()];
     final formattedPrice = NumberFormat.currency(
       locale: 'es_AR',
       symbol: '\$',
@@ -164,20 +154,20 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                       ),
                       const SizedBox(height: 8),
                       Slider(
-                        value: currentValue,
+                        value: currentPosition,
                         min: 0,
-                        max: widget.component.length - 1,
+                        max:  (widget.components.length - 1).toDouble(), 
                         divisions:
-                            (widget.component.length > 1)
-                                ? widget.component.length - 1
+                            (widget.components.length > 1)
+                                ? widget.components.length
                                 : null,
                         onChanged: (value) {
                           setState(() {
-                            currentValue = value;
+                            currentPosition = value;
                           });
                           provider.setSelected(
-                            widget.index,
-                            widget.component[value.toInt()],
+                            widget.posicion,
+                            widget.components[value.toInt()],
                           );
                         },
                       ),
@@ -269,8 +259,8 @@ class _RouteButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screen = context.findAncestorWidgetOfExactType<ComponenetsView>();
-    final isEditing = screen?.editId != null;
-    String? currentName = screen?.configName;
+    final isEditing = screen?.idArmado != null;
+    String? currentName = screen?.nombreArmado;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -469,7 +459,7 @@ class _RouteButtons extends StatelessWidget {
                 if (isEditing) {
                   await storage.updateConfiguration(
                     uid: uid,
-                    docId: screen!.editId!,
+                    docId: screen!.idArmado!,
                     configName: currentName!.trim(),
                     total: provider.total,
                     seleccionados: provider.seleccionados,
@@ -533,7 +523,7 @@ class _RouteButtons extends StatelessWidget {
           armado: provider.armado,
           usarIntel: false,
         );
-//
+        if (!context.mounted) return;
         Navigator.of(context).pop(); // cerrar loading
 
 provider.setAllSelected(seleccionados);
@@ -585,12 +575,9 @@ provider.setAllSelected(seleccionados);
           armado: provider.armado,
           usarIntel: true,
         );
-
+        if (!context.mounted) return;
         Navigator.of(context).pop();
-//
         provider.setAllSelected(seleccionados);
-
-
 
         if (!context.mounted) return;
         await showDialog(
