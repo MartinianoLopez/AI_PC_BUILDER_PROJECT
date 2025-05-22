@@ -1,5 +1,6 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
+import 'package:ai_pc_builder_project/core/services/auto_armed_services.dart';
 import 'package:ai_pc_builder_project/core/services/check_compatibility_with_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -504,12 +505,115 @@ class _RouteButtons extends StatelessWidget {
           ),
 
           Row(
-            children: [
-              ElevatedButton(onPressed: () {}, child: const Text('PC AMD')),
-              const SizedBox(width: 8),
-              ElevatedButton(onPressed: () {}, child: const Text('PC Intel')),
+  children: [
+    ElevatedButton(
+      onPressed: () async {
+        final provider = Provider.of<ComponentsProvider>(
+          context,
+          listen: false,
+        );
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            content: Row(
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Expanded(
+                  child: Text("La IA está armando tu PC AMD..."),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final seleccionados = await autoArmadoSugerido(
+          armado: provider.armado,
+          usarIntel: false,
+        );
+//
+        Navigator.of(context).pop(); // cerrar loading
+
+provider.setAllSelected(seleccionados);
+
+        if (!context.mounted) return;
+        await showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Armado AMD sugerido"),
+            content: const Text(
+              "La IA ha generado una configuración compatible basada en componentes AMD. Podés revisarla y ajustarla si lo deseás.",
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
             ],
           ),
+        );
+      },
+      child: const Text('PC AMD'),
+    ),
+    const SizedBox(width: 8),
+    ElevatedButton(
+      onPressed: () async {
+        final provider = Provider.of<ComponentsProvider>(
+          context,
+          listen: false,
+        );
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            content: Row(
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Expanded(
+                  child: Text("La IA está armando tu PC Intel..."),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        final seleccionados = await autoArmadoSugerido(
+          armado: provider.armado,
+          usarIntel: true,
+        );
+
+        Navigator.of(context).pop();
+//
+        provider.setAllSelected(seleccionados);
+
+
+
+        if (!context.mounted) return;
+        await showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Armado Intel sugerido"),
+            content: const Text(
+              "La IA ha generado una configuración compatible basada en componentes Intel. Podés revisarla y ajustarla si lo deseás.",
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      },
+      child: const Text('PC Intel'),
+    ),
+  ],
+),
+
 
           ElevatedButton(
             onPressed: () {

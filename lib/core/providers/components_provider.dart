@@ -98,8 +98,14 @@ class ComponentsProvider with ChangeNotifier {
     return armado[index].indexWhere((c) => c.id == selected.id);
   }
 
-  void setAllSelected(List<Component> newSeleccionados) {
-    seleccionados = newSeleccionados;
-    notifyListeners();
+  void setAllSelected(List<Component?> newSeleccionados) {
+  if (newSeleccionados.length != seleccionados.length) {
+    print("⚠️ Tamaños desalineados: no se puede actualizar correctamente.");
+    return;
   }
+
+  seleccionados = List.from(newSeleccionados);
+  notifyListeners();
+}
+
 }
