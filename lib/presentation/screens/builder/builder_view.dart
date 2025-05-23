@@ -41,12 +41,20 @@ class _ComponentsViewState extends State<ComponenetsView> {
     });
     
   }
+  
+@override
+Widget build(BuildContext context) {
+  final provider = Provider.of<ComponentsProvider>(context, listen: true);
 
-  @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<ComponentsProvider>(context, listen: true);
-
-    return Scaffold(
+  return PopScope(
+    canPop: true,
+    onPopInvokedWithResult: (didPop, result) {
+      if (didPop) {
+        // ✅ Resetear sliders al salir
+        provider.setAllSelected(List.filled(provider.armado.length, null));
+      }
+    },
+    child: Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
@@ -60,15 +68,14 @@ class _ComponentsViewState extends State<ComponenetsView> {
           ],
         ),
       ),
-
-      body:
-          provider.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : BuilderView(components: provider.armado),
-
+      body: provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : BuilderView(components: provider.armado),
       bottomNavigationBar: const _RouteButtons(),
-    );
-  }
+    ),
+  );
+}
+
 }
 
 class BuilderView extends StatelessWidget {
