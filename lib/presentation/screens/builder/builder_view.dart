@@ -37,7 +37,7 @@ class _ComponentsViewState extends State<ComponenetsView> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<ComponentsProvider>(context, listen: false);
-      provider.createArmado(budget: budget);
+      provider.importarComponentes();
     });
     
   }
@@ -51,7 +51,7 @@ Widget build(BuildContext context) {
     onPopInvokedWithResult: (didPop, result) {
       if (didPop) {
         // ✅ Resetear sliders al salir
-        provider.setAllSelected(List.filled(provider.armado.length, null));
+        provider.setAllSelected(List.filled(provider.getComponents().length, null));
       }
     },
     child: Scaffold(
@@ -70,7 +70,7 @@ Widget build(BuildContext context) {
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : BuilderView(components: provider.armado),
+          : BuilderView(components: provider.getComponents()),
       bottomNavigationBar: const _RouteButtons(),
     ),
   );
@@ -274,6 +274,10 @@ class _RouteButtons extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+
+
+
+          // ------------------------------boton Guardar configuracion ------------------------------
           ElevatedButton(
             child: Text(isEditing ? 'Actualizar' : 'Guardar'),
             onPressed: () async {
@@ -402,6 +406,7 @@ class _RouteButtons extends StatelessWidget {
 
                 if (continuar != true) return;
               }
+              // ----------------------sacar esto del boton de guardado, tiene que estar en un boton aparte-----------------
               if (!context.mounted) return;
               showDialog(
                 context: context,
@@ -456,9 +461,10 @@ class _RouteButtons extends StatelessWidget {
                         ],
                       ),
                 );
+                
 
                 if (continuarIA != true) return;
-              }
+              }//---------------------------------------------------------------------------------
 
               try {
                 final storage = UserConfigurationStorage();
@@ -500,115 +506,83 @@ class _RouteButtons extends StatelessWidget {
               }
             },
           ),
+          
 
-          Row(
-  children: [
-    ElevatedButton(
-      onPressed: () async {
-        final provider = Provider.of<ComponentsProvider>(
-          context,
-          listen: false,
-        );
 
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => AlertDialog(
-            content: Row(
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Expanded(
-                  child: Text("La IA está armando tu PC AMD..."),
+
+          // ------------------------------boton armar pc con ia ------------------------------
+          ElevatedButton(
+            onPressed: () async {
+              final provider = Provider.of<ComponentsProvider>(
+                context,
+                listen: false,
+              );
+
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => AlertDialog(
+                  content: Row(
+                    children: const [
+                      CircularProgressIndicator(),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Text("La IA está armando tu PC..."),
+                      ),
+                    ],
+                  ),
                 ),
+              );
+
+              final seleccionados = await autoArmadoSugerido(
+                armado: provider.getComponents(),
+                usarIntel: !provider.esAmd,
+              );
+              if (!context.mounted) return;
+              Navigator.of(context).pop();
+              provider.setAllSelected(seleccionados);
+
+              if (!context.mounted) return;
+              await showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: Text(provider.esAmd ? "Armado AMD sugerido" : "Armado Intel sugerido"),
+                  content: Text(
+                    "La IA ha generado una configuración compatible basada en componentes ${provider.esAmd ? 'AMD' : 'Intel'}. Podés revisarla y ajustarla si lo deseás.",
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("OK"),
+                    ),
+                  ],
+                ),
+              );
+            },
+            child: const Text('Generar PC'),
+          ),
+          
+
+
+          // ---------------switch de amd o intel-------------------
+          Consumer<ComponentsProvider>(
+            builder: (context, provider, _) => Row(
+              children: [
+                const Text("AMD"),
+                Switch(
+                  value: provider.esAmd,
+                  onChanged: (_) => provider.cambiarAmdOIntel(),
+                ),
+                const Text("Intel"),
               ],
             ),
           ),
-        );
-
-        final seleccionados = await autoArmadoSugerido(
-          armado: provider.armado,
-          usarIntel: false,
-        );
-        if (!context.mounted) return;
-        Navigator.of(context).pop(); // cerrar loading
-
-provider.setAllSelected(seleccionados);
-
-        if (!context.mounted) return;
-        await showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text("Armado AMD sugerido"),
-            content: const Text(
-              "La IA ha generado una configuración compatible basada en componentes AMD. Podés revisarla y ajustarla si lo deseás.",
-            ),
-            actions: [
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
-      },
-      child: const Text('PC AMD'),
-    ),
-    const SizedBox(width: 8),
-    ElevatedButton(
-      onPressed: () async {
-        final provider = Provider.of<ComponentsProvider>(
-          context,
-          listen: false,
-        );
-
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => AlertDialog(
-            content: Row(
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Expanded(
-                  child: Text("La IA está armando tu PC Intel..."),
-                ),
-              ],
-            ),
-          ),
-        );
-
-        final seleccionados = await autoArmadoSugerido(
-          armado: provider.armado,
-          usarIntel: true,
-        );
-        if (!context.mounted) return;
-        Navigator.of(context).pop();
-        provider.setAllSelected(seleccionados);
-
-        if (!context.mounted) return;
-        await showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text("Armado Intel sugerido"),
-            content: const Text(
-              "La IA ha generado una configuración compatible basada en componentes Intel. Podés revisarla y ajustarla si lo deseás.",
-            ),
-            actions: [
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
-      },
-      child: const Text('PC Intel'),
-    ),
-  ],
-),
 
 
+
+
+
+          // ------------------------------boton para ir a los links ------------------------------
           ElevatedButton(
             onPressed: () {
               context.push('/links');

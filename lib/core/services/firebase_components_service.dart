@@ -1,12 +1,8 @@
-// ignore_for_file: avoid_print
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 
 /// 🔄 Descarga componentes desde Firebase y los organiza por categoría
-Future<Map<String, List<Component>>> fetchComponentsFromFirestore(
-  Map<String, Map<String, double>> rangosPorCategoria,
-) async {
+Future<Map<String, List<Component>>> fetchComponentsFromFirestore() async {
   final firestore = FirebaseFirestore.instance;
 
   final categorias = [
@@ -20,27 +16,13 @@ Future<Map<String, List<Component>>> fetchComponentsFromFirestore(
     'gabinete',
     'fuente',
   ];
-
   final Map<String, List<Component>> resultado = {};
 
-  for (final cat in categorias) {
-    final rango = rangosPorCategoria[cat];
-
-    if (rango == null || rango['min'] == null || rango['max'] == null) {
-      
-      print('⚠️ Rango inválido para $cat. Se omite.');
-      continue;
-    }
-
-    final double precioMin = rango['min']!;
-    final double precioMax = rango['max']!;
-
+  for (final categiria in categorias) {
     final querySnapshot = await firestore
         .collection('productos_try')
-        .doc(cat)
+        .doc(categiria)
         .collection('items')
-        .where('precio', isGreaterThanOrEqualTo: precioMin)
-        .where('precio', isLessThanOrEqualTo: precioMax)
         .orderBy('precio')
         .get();
 
@@ -60,9 +42,8 @@ Future<Map<String, List<Component>>> fetchComponentsFromFirestore(
       );
     }
 
-    resultado[cat] = componentes;
+    resultado[categiria] = componentes;
   }
-
   print('✅ Componentes descargados y filtrados por precio');
   return resultado;
 }
