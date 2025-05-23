@@ -86,7 +86,7 @@ class MainBodyState extends State<_MainBody> {
   
   await provider.createArmado(budget: budget);
 
-
+  if (!context.mounted) return;
   context.push('/components', extra: {'budget': budget});
 }
 

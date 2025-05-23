@@ -18,6 +18,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
         "messages": [
           {"role": "user", "content": prompt},
         ],
+        "max_tokens": 500
       }),
     );
 

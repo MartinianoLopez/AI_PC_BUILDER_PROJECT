@@ -40,10 +40,12 @@ final messages = [
       "Content-Type": "application/json",
     },
     body: jsonEncode({
-      "model": "gpt-4",
-      "messages": messages,
-      "temperature": 0.4,
-    }),
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {"role": "user", "content": messages},
+        ],
+        "max_tokens": 500
+      }),
   );
 
   if (response.statusCode == 200) {

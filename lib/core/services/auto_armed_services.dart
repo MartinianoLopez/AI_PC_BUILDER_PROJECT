@@ -66,13 +66,14 @@ Respondé sólo con los nombres exactos de los componentes seleccionados. Nada m
       "Content-Type": "application/json",
     },
     body: jsonEncode({
-      "model": "gpt-4",
-      "messages": [
-        {"role": "system", "content": systemPrompt},
-        {"role": "user", "content": userPrompt},
-      ],
-      "temperature": 0.4,
-    }),
+        "model": "gpt-3.5-turbo",
+        "messages": [
+           {"role": "system", "content": systemPrompt},
+          {"role": "user", "content": userPrompt},
+        ],
+        "temperature": 0.4,
+        "max_tokens": 500
+      }),
   );
 
   if (response.statusCode != 200) {
