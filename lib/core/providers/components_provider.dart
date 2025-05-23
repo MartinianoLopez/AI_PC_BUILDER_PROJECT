@@ -16,9 +16,15 @@ class ComponentsProvider with ChangeNotifier {
       seleccionados.fold(0.0, (sum, comp) => sum + (comp?.price ?? 0));
 
   Future<void> createArmado({required int budget}) async {
-    if (_cargado) return;
-    isLoading = true;
-    notifyListeners();
+if (_cargado) {
+  
+  seleccionados = List.filled(armado.length, null);
+  notifyListeners();
+  return;
+}
+
+isLoading = true;
+notifyListeners();
 
     final rangos = generarRangos(budget.toDouble());
 

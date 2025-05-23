@@ -116,3 +116,22 @@ class UserConfigurationStorage {
     }).toList();
   }
 }
+
+Future<List<Component?>> mapGuardadoASeleccion(
+  List componentesGuardados,
+  List<List<Component>> armadoActual,
+) async {
+  return List.generate(armadoActual.length, (index) {
+    if (index >= componentesGuardados.length) return null;
+
+    final guardado = componentesGuardados[index];
+    if (guardado == null || guardado['id'] == null) return null;
+
+    final componente = armadoActual[index].firstWhere(
+      (c) => c.id == guardado['id'],
+      orElse: () => Component(id: '', name: '', price: 0, image: '', link: ''),
+    );
+
+    return componente.id.isEmpty ? null : componente;
+  });
+}

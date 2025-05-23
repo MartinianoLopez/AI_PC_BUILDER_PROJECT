@@ -17,7 +17,7 @@ Map<String, Map<String, double>> generarRangos(double presupuesto) {
   distribucion.forEach((categoria, porcentaje) {
     final base = presupuesto * porcentaje;
     rangos[categoria] = {
-      'min': base * (1 - variacion),
+      'min': 0,
       'max': base * (1 + variacion),
     };
   });

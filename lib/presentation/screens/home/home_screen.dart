@@ -58,31 +58,38 @@ class MainBodyState extends State<_MainBody> {
     _loadSavedConfigurations();
   }
 
-  void solicitudDeIngresoAlArmador(String inputBudget, BuildContext context) {
-    final int budget = int.tryParse(inputBudget) ?? 0;
+  void solicitudDeIngresoAlArmador(String inputBudget, BuildContext context) async {
+  final int budget = int.tryParse(inputBudget) ?? 0;
 
-    if (budget < 399999) {
-      _mostrarAlerta(
-        context,
-        titulo: 'Presupuesto insuficiente',
-        mensaje: 'El mínimo para hacer una PC completa es \$400.000.',
-        budgetSugerido: 400000,
-      );
-      return;
-    }
-
-    if (budget > 5000001) {
-      _mostrarAlerta(
-        context,
-        titulo: 'Presupuesto excedido',
-        mensaje: 'El presupuesto máximo es \$5.000.000.',
-        budgetSugerido: 5000000,
-      );
-      return;
-    }
-
-    context.push('/components', extra: {'budget': budget});
+  if (budget < 399999) {
+    _mostrarAlerta(
+      context,
+      titulo: 'Presupuesto insuficiente',
+      mensaje: 'El mínimo para hacer una PC completa es \$400.000.',
+      budgetSugerido: 400000,
+    );
+    return;
   }
+
+  if (budget > 5000001) {
+    _mostrarAlerta(
+      context,
+      titulo: 'Presupuesto excedido',
+      mensaje: 'El presupuesto máximo es \$5.000.000.',
+      budgetSugerido: 5000000,
+    );
+    return;
+  }
+
+  final provider = Provider.of<ComponentsProvider>(context, listen: false);
+
+  
+  await provider.createArmado(budget: budget);
+
+
+  context.push('/components', extra: {'budget': budget});
+}
+
 
   void _mostrarAlerta(
     BuildContext context, {
