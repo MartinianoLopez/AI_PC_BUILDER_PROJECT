@@ -524,10 +524,12 @@ class _RouteButtons extends StatelessWidget {
                       ),
                     ),
               );
+              print("💰 Presupuesto pasado a IA: ${screen!.initialBudget}");
 
               final seleccionados = await autoArmadoSugerido(
                 armado: provider.components,
                 usarIntel: !provider.esAmd,
+                budget: screen!.initialBudget, // 👈 le pasás el presupuesto
               );
               if (!context.mounted) return;
               Navigator.of(context).pop();
