@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenAIService {
-  Future<String> sendPrompt(String prompt) async {
+
+Future<String> sendPrompt(List<Map<String, String>> messages) async {
     await dotenv.load();
     var apiKey = dotenv.env['OPENAI_API_KEY'];
     if (apiKey == null) {
@@ -20,9 +21,7 @@ class OpenAIService {
       },
       body: jsonEncode({
         "model": "gpt-3.5-turbo",
-        "messages": [
-          {"role": "user", "content": prompt},
-        ],
+        "messages": messages,
         "max_tokens": 500
       }),
     );
@@ -35,3 +34,6 @@ class OpenAIService {
     }
   }
 }
+
+
+

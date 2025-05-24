@@ -4,12 +4,13 @@ import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.d
 import 'package:ai_pc_builder_project/core/services/openai_service.dart';
 
 Future<String> test() async {
-    final openAIService = OpenAIService();
-  final res = await openAIService.sendPrompt(
-    "Dame una lista CORTA de componentes de PC en json",
-  );
+  final openAIService = OpenAIService();
+  final res = await openAIService.sendPrompt([
+    {"role": "user", "content": "Dame una lista CORTA de componentes de PC en json"},
+  ]);
   return res;
 }
+
 
 class TestingSCreen extends StatefulWidget {
   const TestingSCreen({super.key});

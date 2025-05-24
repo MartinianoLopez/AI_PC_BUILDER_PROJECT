@@ -89,15 +89,32 @@ class ComponentsProvider with ChangeNotifier {
     return index >= 0 ? index : 0; // evitar -1 porque genera un range error
   }
 
-  void setAllSelected(List<Component?> newSeleccionados) {
-    if (newSeleccionados.length != seleccionados.length) {
-      print("⚠️ Tamaños desalineados: no se puede actualizar correctamente.");
-      return;
-    }
+void setAllSelected(List<Component?> newSeleccionados, {BuildContext? context}) {
+  print("📦 Largo nuevo: ${newSeleccionados.length}");
+  print("📦 Largo actual: ${seleccionados.length}");
 
-    seleccionados = List.from(newSeleccionados);
-    notifyListeners();
+  if (newSeleccionados.length != seleccionados.length) {
+    print("⚠️ Tamaños desalineados: adaptando lista...");
+    seleccionados = List.generate(
+      seleccionados.length,
+      (i) => i < newSeleccionados.length ? newSeleccionados[i] : null,
+    );
+
+    if (context != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("⚠️ Algunos componentes no fueron cargados correctamente."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  } else {
+    seleccionados = newSeleccionados;
   }
+
+  notifyListeners();
+}
+
 
   void cambiarAmdOIntel() {
     esAmd = !esAmd;
