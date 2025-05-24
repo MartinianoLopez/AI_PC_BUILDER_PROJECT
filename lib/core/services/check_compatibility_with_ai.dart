@@ -1,62 +1,31 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:ai_pc_builder_project/core/classes/component.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ai_pc_builder_project/core/services/openai_service.dart';
 
-checkCompatibilityWithAI(List<Component> components) async {
-  final apiKey = dotenv.env['OPENAI_API_KEY'];
+Future<String> checkCompatibilityWithAI(List<Component> components) async {
+  final componentsDescription = components
+      .map((c) => "- ${c.name} (\$${c.price.toStringAsFixed(2)} ARS)")
+      .join("\n");
 
-  if (apiKey == null) {
-    
+  final prompt = '''
+Sos un experto en hardware de PC. Vas a recibir una lista de componentes y tenés que verificar:
+- Compatibilidad de socket entre CPU y placa madre
+- Compatibilidad de RAM
+- Fuente suficiente
+- Cuello de botella GPU/CPU
+- Advertencias importantes o sugerencias de mejora
 
-    print("API key no encontrada en .env");
-    return "Error: No se encontró la clave de API.";
-  }
+Estos son los componentes:
+$componentsDescription
 
-  final componentsDescription = components.map((c) => "- ${c.name} (${c.price} ARS)").join("\n");
-print("🧠 Enviando a la IA:\n$componentsDescription");
-final messages = [
-  {
-    "role": "system",
-    "content":
-        "Sos un experto en hardware de PC. Vas a recibir una lista de componentes y tenés que verificar:\n"
-            "- Compatibilidad de socket entre CPU y placa madre\n"
-            "- Compatibilidad de RAM\n"
-            "- Fuente suficiente\n"
-            "- Cuello de botella GPU/CPU\n"
-            "- Advertencias importantes o sugerencias de mejora\n"
-            "Respondé en forma clara, incluso si no hay errores."
-  },
-  {
-    "role": "user",
-    "content": "Estos son los componentes:\n$componentsDescription\n\n¿Hay algo que deba saber antes de guardar este armado?"
-  }
-];
+¿Hay algo que deba saber antes de guardar este armado?
+''';
 
-  final response = await http.post(
-    Uri.parse("https://api.openai.com/v1/chat/completions"),
-    headers: {
-      "Authorization": "Bearer $apiKey",
-      "Content-Type": "application/json",
-    },
-    body: jsonEncode({
-        "model": "gpt-3.5-turbo",
-        "messages": [
-          {"role": "user", "content": messages},
-        ],
-        "max_tokens": 500
-      }),
-  );
+  final openAI = OpenAIService();
+  final respuesta = await openAI.sendPrompt(prompt);
 
-  if (response.statusCode == 200) {
-  final result = jsonDecode(response.body);
-  final content = result['choices'][0]['message']['content'];
-
-  if (content != null && content.trim().isNotEmpty) {
-    return content;
-  } else {
+  if (respuesta.trim().isEmpty) {
     return "✅ No se detectaron incompatibilidades. El armado parece correcto.";
   }
-}
 
+  return respuesta;
 }
