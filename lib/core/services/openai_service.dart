@@ -2,9 +2,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+class OpenAIService {
   Future<String> sendPrompt(String prompt) async {
     await dotenv.load();
     var apiKey = dotenv.env['OPENAI_API_KEY'];
+    if (apiKey == null) {
+      print("Error: No se encontró la clave de API.");
+      return "Error: No se encontró la clave de API.";
+    }
 
     final url = Uri.parse('https://api.openai.com/v1/chat/completions');
     final response = await http.post(
@@ -29,3 +34,4 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
       throw Exception('Error al consultar ChatGPT: ${response.body}');
     }
   }
+}

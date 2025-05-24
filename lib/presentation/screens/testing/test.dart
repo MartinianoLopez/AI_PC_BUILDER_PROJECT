@@ -4,7 +4,8 @@ import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.d
 import 'package:ai_pc_builder_project/core/services/openai_service.dart';
 
 Future<String> test() async {
-  final res = await sendPrompt(
+    final openAIService = OpenAIService();
+  final res = await openAIService.sendPrompt(
     "Dame una lista CORTA de componentes de PC en json",
   );
   return res;
