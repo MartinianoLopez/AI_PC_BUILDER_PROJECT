@@ -526,7 +526,7 @@ class _RouteButtons extends StatelessWidget {
               );
 
               final seleccionados = await autoArmadoSugerido(
-                armado: provider.getComponents(),
+                armado: provider.components,
                 usarIntel: !provider.esAmd,
               );
               if (!context.mounted) return;
