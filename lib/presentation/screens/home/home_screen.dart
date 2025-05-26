@@ -92,26 +92,30 @@ class MainBodyState extends State<_MainBody> {
   }) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
-        content: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(mensaje, style: const TextStyle(fontSize: 16)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Volver'),
+      builder:
+          (_) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              titulo,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(mensaje, style: const TextStyle(fontSize: 16)),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Volver'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Aceptar'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Aceptar'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -158,7 +162,10 @@ class MainBodyState extends State<_MainBody> {
                 ),
               ),
               const SizedBox(height: 30),
-              const Text('Tus Armados Guardados:', style: TextStyle(fontSize: 16)),
+              const Text(
+                'Tus Armados Guardados:',
+                style: TextStyle(fontSize: 16),
+              ),
               const SizedBox(height: 10),
 
               ListView.builder(
@@ -168,15 +175,22 @@ class MainBodyState extends State<_MainBody> {
                 itemBuilder: (context, index) {
                   final config = savedConfigurations[index];
                   final name = config['name'] ?? 'Sin nombre';
-                  final total = config['total'] ?? 0;
+                  final total = config['total'] ?? 0 as double;
                   final docId = config['id'];
 
                   return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     child: ListTile(
                       leading: const Icon(Icons.computer),
-                      title: Text('${_getPlatformPrefix(config['componentes'])} - $name'),
-                      subtitle: Text('Total: \$${NumberFormat("#,##0", "es_AR").format(total)}'),
+                      title: Text(
+                        '${_getPlatformPrefix(config['componentes'])} - $name',
+                      ),
+                      subtitle: Text(
+                        'Total: \$${NumberFormat("#,##0", "es_AR").format(total)}',
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -184,17 +198,23 @@ class MainBodyState extends State<_MainBody> {
                             icon: const Icon(Icons.link),
                             tooltip: 'Ver links',
                             onPressed: () {
-                              final provider = Provider.of<ComponentsProvider>(context, listen: false);
-                              List<Component> componentesGuardados = List<Component>.from(
-                                (config['componentes'] as List).where((c) => c != null).map(
-                                  (c) => Component(
-                                    id: c['id'] ?? '-1',
-                                    name: c['titulo'] ?? 'No seleccionado',
-                                    price: c['precio'] ?? 0,
-                                    image: c['imagen'] ?? '#',
-                                    link: c['enlace'] ?? '#',
-                                  ),
-                                ),
+                              final provider = Provider.of<ComponentsProvider>(
+                                context,
+                                listen: false,
+                              );
+                              List<Component>
+                              componentesGuardados = List<Component>.from(
+                                (config['componentes'] as List)
+                                    .where((c) => c != null)
+                                    .map(
+                                      (c) => Component(
+                                        id: c['id'] ?? '-1',
+                                        name: c['titulo'] ?? 'No seleccionado',
+                                        price: c['precio'] ?? 0,
+                                        image: c['imagen'] ?? '#',
+                                        link: c['enlace'] ?? '#',
+                                      ),
+                                    ),
                               );
                               provider.setAllSelected(componentesGuardados);
                               context.push('/links');
@@ -206,43 +226,56 @@ class MainBodyState extends State<_MainBody> {
                             onPressed: () async {
                               final confirm = await showDialog<bool>(
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Confirmar edición'),
-                                  content: const Text('¿Estás seguro de que querés modificar este armado?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, false),
-                                      child: const Text('Cancelar'),
+                                builder:
+                                    (context) => AlertDialog(
+                                      title: const Text('Confirmar edición'),
+                                      content: const Text(
+                                        '¿Estás seguro de que querés modificar este armado?',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, false),
+                                          child: const Text('Cancelar'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, true),
+                                          child: const Text('Sí, modificar'),
+                                        ),
+                                      ],
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () => Navigator.pop(context, true),
-                                      child: const Text('Sí, modificar'),
-                                    ),
-                                  ],
-                                ),
                               );
 
                               if (confirm != true) return;
                               if (!context.mounted) return;
 
-                              final provider = Provider.of<ComponentsProvider>(context, listen: false);
-                              List<Component> componentesGuardados = List<Component>.from(
-                                (config['componentes'] as List).where((c) => c != null).map(
-                                  (c) => Component(
-                                    id: c['id'] ?? '-1',
-                                    name: c['titulo'] ?? 'No seleccionado',
-                                    price: c['precio'] ?? 0,
-                                    image: c['imagen'] ?? '#',
-                                    link: c['enlace'] ?? '#',
-                                  ),
-                                ),
+                              final provider = Provider.of<ComponentsProvider>(
+                                context,
+                                listen: false,
+                              );
+                              List<Component>
+                              componentesGuardados = List<Component>.from(
+                                (config['componentes'] as List)
+                                    .where((c) => c != null)
+                                    .map(
+                                      (c) => Component(
+                                        id: c['id'] ?? '-1',
+                                        name: c['titulo'] ?? 'No seleccionado',
+                                        price: c['precio'] ?? 0,
+                                        image: c['imagen'] ?? '#',
+                                        link: c['enlace'] ?? '#',
+                                      ),
+                                    ),
                               );
 
                               // Pasa seleccionados y esAmd al editar
                               context.push(
                                 '/components',
                                 extra: {
-                                  'budget': total,
+                                  'budget': total.round(),
                                   'editId': docId,
                                   'name': name,
                                   'seleccionados': componentesGuardados,
@@ -257,29 +290,40 @@ class MainBodyState extends State<_MainBody> {
                             onPressed: () async {
                               final confirm = await showDialog<bool>(
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Eliminar armado'),
-                                  content: const Text('¿Estás seguro de que querés eliminar este armado? Esta acción no se puede deshacer.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, false),
-                                      child: const Text('Cancelar'),
+                                builder:
+                                    (context) => AlertDialog(
+                                      title: const Text('Eliminar armado'),
+                                      content: const Text(
+                                        '¿Estás seguro de que querés eliminar este armado? Esta acción no se puede deshacer.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, false),
+                                          child: const Text('Cancelar'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, true),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                          ),
+                                          child: const Text('Eliminar'),
+                                        ),
+                                      ],
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () => Navigator.pop(context, true),
-                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                      child: const Text('Eliminar'),
-                                    ),
-                                  ],
-                                ),
                               );
 
                               if (confirm != true) return;
 
-                              final uid = FirebaseAuth.instance.currentUser?.uid;
+                              final uid =
+                                  FirebaseAuth.instance.currentUser?.uid;
                               if (uid == null || docId == null) return;
 
-                              await UserConfigurationStorage().deleteConfiguration(uid: uid, docId: docId);
+                              await UserConfigurationStorage()
+                                  .deleteConfiguration(uid: uid, docId: docId);
                               setState(() {
                                 savedConfigurations.removeAt(index);
                               });
@@ -301,14 +345,17 @@ class MainBodyState extends State<_MainBody> {
   String _getPlatformPrefix(List componentes) {
     for (final c in componentes) {
       final titulo = (c['titulo'] ?? '').toString().toLowerCase();
-      if (titulo.contains('amd') || titulo.contains('am4') || titulo.contains('am5')) {
+      if (titulo.contains('amd') ||
+          titulo.contains('am4') ||
+          titulo.contains('am5')) {
         return 'AMD';
       }
-      if (titulo.contains('intel') || titulo.contains('1200') || titulo.contains('1700')) {
+      if (titulo.contains('intel') ||
+          titulo.contains('1200') ||
+          titulo.contains('1700')) {
         return 'Intel';
       }
     }
     return 'Genérico';
   }
 }
-
