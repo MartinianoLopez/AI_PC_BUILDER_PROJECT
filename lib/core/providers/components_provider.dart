@@ -9,6 +9,7 @@ class ComponentsProvider with ChangeNotifier {
   bool esAmd = true;
   bool _cargado = false;
   bool isLoading = false;
+  bool get estaCargado => _cargado;
   final orden = [
     "procesador_amd",
     "procesador_intel",
@@ -82,12 +83,19 @@ class ComponentsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  int getSelected(int posicion) {
-    final selected = seleccionados[posicion];
-    if (selected == null) return 0;
-    final index = components[posicion].indexWhere((c) => c.id == selected.id);
-    return index >= 0 ? index : 0; // evitar -1 porque genera un range error
-  }
+int getSelected(int posicion) {
+  final selected = seleccionados[posicion];
+  if (selected == null) return 0;
+
+  final componentesFiltrados = getComponents();
+
+  // Protegemos si hay un desajuste de índices
+  if (posicion >= componentesFiltrados.length) return 0;
+
+  final index = componentesFiltrados[posicion].indexWhere((c) => c.id == selected.id);
+  return index >= 0 ? index : 0; // evitar -1 porque genera un range error
+}
+
 
 void setAllSelected(List<Component?> newSeleccionados, {BuildContext? context}) {
   print("📦 Largo nuevo: ${newSeleccionados.length}");

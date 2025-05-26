@@ -15,11 +15,15 @@ class ComponenetsView extends StatefulWidget {
     required this.initialBudget,
     this.idArmado,
     this.nombreArmado,
+    this.seleccionados,
+    this.esAmd = true,
   });
 
   final int initialBudget;
   final String? idArmado; // ID del documento en Firestore (armado)
   final String? nombreArmado; // nombre actual del armado (si ya existía)
+  final List<Component?>? seleccionados; 
+  final bool esAmd;  
 
   @override
   State<ComponenetsView> createState() => _ComponentsViewState();
@@ -30,16 +34,28 @@ class _ComponentsViewState extends State<ComponenetsView> {
 
   late int budget;
 
-  @override
-  void initState() {
-    super.initState();
-    budget = widget.initialBudget;
+@override
+void initState() {
+  super.initState();
+  budget = widget.initialBudget;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<ComponentsProvider>(context, listen: false);
-      provider.importarComponentes();
-    });
-  }
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+
+    // Restaurar AMD/Intel desde lo guardado
+    provider.esAmd = widget.esAmd;
+
+    // Importar componentes solo si aún no están cargados
+    await provider.importarComponentes();
+
+    // Restaurar selección de sliders si hay valores guardados
+    if (widget.seleccionados != null && widget.seleccionados!.isNotEmpty) {
+      provider.setAllSelected(widget.seleccionados!);
+    }
+  });
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -471,6 +487,8 @@ class _RouteButtons extends StatelessWidget {
                     configName: currentName!.trim(),
                     total: provider.total,
                     seleccionados: provider.seleccionados,
+                    esAmd: provider.esAmd,
+
                   );
                 } else {
                   await storage.saveConfiguration(
@@ -478,6 +496,8 @@ class _RouteButtons extends StatelessWidget {
                     configName: currentName!.trim(),
                     total: provider.total,
                     seleccionados: provider.seleccionados,
+                    esAmd: provider.esAmd,
+
                   );
                 }
 

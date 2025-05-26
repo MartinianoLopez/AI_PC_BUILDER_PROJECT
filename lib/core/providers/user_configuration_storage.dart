@@ -9,6 +9,7 @@ class UserConfigurationStorage {
     required String configName,
     required double total,
     required List<Component?> seleccionados,
+    required bool esAmd,
   }) async {
     final armadosRef = _firestore
         .collection('users')
@@ -43,6 +44,7 @@ class UserConfigurationStorage {
       'total': total,
       'date': DateTime.now().toIso8601String(),
       'componentes': componentes,
+      'esAmd': esAmd,
     };
 
     await armadosRef.add(data);
@@ -66,6 +68,7 @@ class UserConfigurationStorage {
     required String configName,
     required double total,
     required List<Component?> seleccionados,
+    required bool esAmd,
   }) async {
     final componentes =
         seleccionados
@@ -86,6 +89,7 @@ class UserConfigurationStorage {
       'total': total,
       'date': DateTime.now().toIso8601String(),
       'componentes': componentes,
+      'esAmd': esAmd,
     };
 
     await FirebaseFirestore.instance
@@ -112,6 +116,7 @@ class UserConfigurationStorage {
         'name': data['name'],
         'total': data['total'],
         'componentes': data['componentes'] ?? [],
+        'esAmd': data['esAmd'] ?? true,
       };
     }).toList();
   }

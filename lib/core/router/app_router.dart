@@ -35,6 +35,8 @@ final GoRouter appRouter = GoRouter(
       initialBudget: args?['budget'] ?? 0,
       idArmado: args?['editId'],
       nombreArmado: args?['name'],
+      seleccionados: args?['seleccionados'],
+      esAmd: args?['esAmd'] ?? true,
     );
   },
 ),
