@@ -278,6 +278,63 @@ class _ComponentSliderState extends State<_ComponentSlider> {
 class _RouteButtons extends StatelessWidget {
   const _RouteButtons();
 
+  Future<void> _analizarCompatibilidadConIA(BuildContext context) async {
+    final provider = Provider.of<ComponentsProvider>(
+      context,
+      listen: false,
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        content: Row(
+          children: const [
+            CircularProgressIndicator(),
+            SizedBox(width: 20),
+            Expanded(child: Text("Analizando compatibilidad con IA...")),
+          ],
+        ),
+      ),
+    );
+
+    final iaWarning = await checkCompatibilityWithAI(
+      provider.seleccionados.whereType<Component>().toList(),
+    );
+
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
+
+    if (iaWarning != null && iaWarning.trim().isNotEmpty) {
+      await showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Row(
+            children: const [
+              Icon(Icons.info_outline, color: Colors.green),
+              SizedBox(width: 8),
+              Text('Verificación IA'),
+            ],
+          ),
+          content: Text(
+            iaWarning,
+            style: const TextStyle(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('✅ Todo compatible según IA')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screen = context.findAncestorWidgetOfExactType<ComponenetsView>();
@@ -286,255 +343,113 @@ class _RouteButtons extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // ------------------------------boton Guardar configuracion ------------------------------
-          ElevatedButton(
-            child: Text(isEditing ? 'Actualizar' : 'Guardar'),
-            onPressed: () async {
-              final provider = Provider.of<ComponentsProvider>(
-                context,
-                listen: false,
-              );
-              final uid = FirebaseAuth.instance.currentUser?.uid;
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                child: Text(isEditing ? 'Actualizar' : 'Guardar'),
+                onPressed: () async {
+                  final provider = Provider.of<ComponentsProvider>(
+                    context,
+                    listen: false,
+                  );
+                  final uid = FirebaseAuth.instance.currentUser?.uid;
 
-              if (uid == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('❌ Usuario no logueado')),
-                );
-                return;
-              }
-
-              // Pedimos nombre solo si no vino uno existente
-              if (currentName?.trim().isEmpty ?? true) {
-                await showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Nombre del armado'),
-                      content: TextField(
-                        autofocus: true,
-                        onChanged: (value) {
-                          currentName = value;
-                        },
-                        decoration: const InputDecoration(
-                          hintText: "Ej: Mi PC gamer",
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancelar'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Guardar'),
-                        ),
-                      ],
+                  if (uid == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('❌ Usuario no logueado')),
                     );
-                  },
-                );
+                    return;
+                  }
 
-                if (currentName!.trim().isEmpty) return;
-              }
-
-              final initialBudget = screen?.initialBudget ?? 0;
-              final total = provider.total;
-              final formatter = NumberFormat("#,##0", "es_AR");
-
-              // ⚠️ Advertencia: excede el presupuesto
-              if (total > initialBudget) {
-                if (!context.mounted) return;
-                final continuar = await showDialog<bool>(
-                  context: context,
-                  builder:
-                      (context) => AlertDialog(
-                        title: Row(
-                          children: const [
-                            Icon(
-                              Icons.warning_amber_rounded,
-                              color: Colors.orange,
+                  if (currentName?.trim().isEmpty ?? true) {
+                    await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Nombre del armado'),
+                          content: TextField(
+                            autofocus: true,
+                            onChanged: (value) {
+                              currentName = value;
+                            },
+                            decoration: const InputDecoration(
+                              hintText: "Ej: Mi PC gamer",
                             ),
-                            SizedBox(width: 8),
-                            Text(
-                              'Presupuesto superado',
-                              style: TextStyle(color: Colors.orange),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancelar'),
                             ),
-                          ],
-                        ),
-                        content: Text(
-                          'El armado cuesta \$${formatter.format(total)}, pero ingresaste un presupuesto de \$${formatter.format(initialBudget)}.\n\n¿Deseás continuar de todos modos?',
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancelar'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Sí, continuar'),
-                          ),
-                        ],
-                      ),
-                );
-
-                if (continuar != true) return;
-              }
-              // 🟡 Advertencia: estás muy por debajo del presupuesto (menos del 70%)
-              else if (total < initialBudget * 0.7) {
-                if (!context.mounted) return;
-                final continuar = await showDialog<bool>(
-                  context: context,
-                  builder:
-                      (context) => AlertDialog(
-                        title: Row(
-                          children: const [
-                            Icon(Icons.info_outline, color: Colors.blue),
-                            SizedBox(width: 8),
-                            Text(
-                              'Presupuesto subutilizado',
-                              style: TextStyle(color: Colors.blue),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Guardar'),
                             ),
                           ],
+                        );
+                      },
+                    );
+
+                    if (currentName!.trim().isEmpty) return;
+                  }
+
+                  try {
+                    final storage = UserConfigurationStorage();
+
+                    if (isEditing) {
+                      await storage.updateConfiguration(
+                        uid: uid,
+                        docId: screen!.idArmado!,
+                        configName: currentName!.trim(),
+                        total: provider.total,
+                        seleccionados: provider.seleccionados,
+                        esAmd: provider.esAmd,
+                      );
+                    } else {
+                      await storage.saveConfiguration(
+                        uid: uid,
+                        configName: currentName!.trim(),
+                        total: provider.total,
+                        seleccionados: provider.seleccionados,
+                        esAmd: provider.esAmd,
+                      );
+                    }
+
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            isEditing
+                                ? '✅ Armado actualizado'
+                                : '✅ Armado guardado',
+                          ),
                         ),
-                        content: Text(
-                          'Tu armado cuesta solo \$${formatter.format(total)} de los \$${formatter.format(initialBudget)} disponibles.\n\n¿Deseás continuar igualmente?',
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancelar'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Sí, continuar'),
-                          ),
-                        ],
-                      ),
-                );
-
-                if (continuar != true) return;
-              }
-              // ----------------------sacar esto del boton de guardado, tiene que estar en un boton aparte-----------------
-              if (!context.mounted) return;
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder:
-                    (_) => AlertDialog(
-                      content: Row(
-                        children: const [
-                          CircularProgressIndicator(),
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: Text("Analizando compatibilidad con IA..."),
-                          ),
-                        ],
-                      ),
-                    ),
-              );
-              final iaWarning = await checkCompatibilityWithAI(
-                provider.seleccionados.whereType<Component>().toList(),
-              );
-              if (!context.mounted) return;
-              Navigator.of(context).pop();
-              //print("📩 Respuesta IA: $iaWarning");
-
-              // ✅ Mostrar advertencia aunque no haya errores críticos
-              if (iaWarning != null && iaWarning.trim().isNotEmpty) {
-                if (!context.mounted) return;
-                final continuarIA = await showDialog<bool>(
-                  context: context,
-                  builder:
-                      (_) => AlertDialog(
-                        title: Row(
-                          children: const [
-                            Icon(Icons.info_outline, color: Colors.green),
-                            SizedBox(width: 8),
-                            Text('Verificación IA'),
-                          ],
-                        ),
-                        content: Text(
-                          iaWarning,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Seguir editando'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Guardar de todos modos'),
-                          ),
-                        ],
-                      ),
-                );
-
-                if (continuarIA != true) return;
-              } //---------------------------------------------------------------------------------
-
-              try {
-                final storage = UserConfigurationStorage();
-
-                if (isEditing) {
-                  await storage.updateConfiguration(
-                    uid: uid,
-                    docId: screen!.idArmado!,
-                    configName: currentName!.trim(),
-                    total: provider.total,
-                    seleccionados: provider.seleccionados,
-                    esAmd: provider.esAmd,
-
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('❌ Error: ${e.toString()}')),
+                      );
+                    }
+                  }
+                },
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final provider = Provider.of<ComponentsProvider>(
+                    context,
+                    listen: false,
                   );
-                } else {
-                  await storage.saveConfiguration(
-                    uid: uid,
-                    configName: currentName!.trim(),
-                    total: provider.total,
-                    seleccionados: provider.seleccionados,
-                    esAmd: provider.esAmd,
 
-                  );
-                }
-
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        isEditing
-                            ? '✅ Armado actualizado'
-                            : '✅ Armado guardado',
-                      ),
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('❌ Error: ${e.toString()}')),
-                  );
-                }
-              }
-            },
-          ),
-
-          // ------------------------------boton armar pc con ia ------------------------------
-          ElevatedButton(
-            onPressed: () async {
-              final provider = Provider.of<ComponentsProvider>(
-                context,
-                listen: false,
-              );
-
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder:
-                    (_) => AlertDialog(
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => AlertDialog(
                       content: Row(
                         children: const [
                           CircularProgressIndicator(),
@@ -543,31 +458,23 @@ class _RouteButtons extends StatelessWidget {
                         ],
                       ),
                     ),
-              );
-              print("💰 Presupuesto pasado a IA: ${screen!.initialBudget}");
+                  );
+                  print("💰 Presupuesto pasado a IA: ${screen!.initialBudget}");
 
-              final seleccionados = await autoArmadoSugerido(
-                armado: provider.components,
-                usarIntel: !provider.esAmd,
-                budget: screen!.initialBudget, // 👈 le pasás el presupuesto
-              );
-              if (!context.mounted) return;
-              Navigator.of(context).pop();
-              // print de pruebaa
-              print(
-                "📦 Seteando seleccionados (largo: ${seleccionados.length})",
-              );
-              print(
-                "📦 Componentes originales (largo: ${provider.getComponents().length})",
-              );
+                  final seleccionados = await autoArmadoSugerido(
+                    armado: provider.components,
+                    usarIntel: !provider.esAmd,
+                    budget: screen!.initialBudget,
+                  );
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop();
 
-              provider.setAllSelected(seleccionados);
+                  provider.setAllSelected(seleccionados);
 
-              if (!context.mounted) return;
-              await showDialog(
-                context: context,
-                builder:
-                    (_) => AlertDialog(
+                  if (!context.mounted) return;
+                  await showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
                       title: Text(
                         provider.esAmd
                             ? "Armado AMD sugerido"
@@ -583,15 +490,12 @@ class _RouteButtons extends StatelessWidget {
                         ),
                       ],
                     ),
-              );
-            },
-            child: const Text('Generar PC'),
-          ),
-
-          // ---------------switch de amd o intel-------------------
-          Consumer<ComponentsProvider>(
-            builder:
-                (context, provider, _) => Row(
+                  );
+                },
+                child: const Text('Generar PC'),
+              ),
+              Consumer<ComponentsProvider>(
+                builder: (context, provider, _) => Row(
                   children: [
                     const Text("AMD"),
                     Switch(
@@ -601,14 +505,24 @@ class _RouteButtons extends StatelessWidget {
                     const Text("Intel"),
                   ],
                 ),
+              ),
+            ],
           ),
-
-          // ------------------------------boton para ir a los links ------------------------------
-          ElevatedButton(
-            onPressed: () {
-              context.push('/links');
-            },
-            child: const Text('Ver Links'),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: () => _analizarCompatibilidadConIA(context),
+                child: const Text('Analizar con IA'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  context.push('/links');
+                },
+                child: const Text('Ver Links'),
+              ),
+            ],
           ),
         ],
       ),
