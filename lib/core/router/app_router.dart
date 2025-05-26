@@ -1,3 +1,4 @@
+import 'package:ai_pc_builder_project/presentation/screens/search_component/search_component.dart';
 import 'package:ai_pc_builder_project/presentation/screens/testing/test.dart';
 import 'package:ai_pc_builder_project/presentation/screens/testing/test_image.dart';
 import 'package:go_router/go_router.dart';
@@ -26,21 +27,24 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ComponentsLinks(),
     ),
 
-   GoRoute(
-  path: '/components',
-  builder: (context, state) {
-    final args = state.extra as Map<String, dynamic>?;
+    GoRoute(
+      path: '/components',
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>?;
 
-    return ComponenetsView(
-      initialBudget: args?['budget'] ?? 0,
-      idArmado: args?['editId'],
-      nombreArmado: args?['name'],
-      seleccionados: args?['seleccionados'],
-      esAmd: args?['esAmd'] ?? true,
-    );
-  },
-),
-
+        return ComponenetsView(
+          initialBudget: args?['budget'] ?? 0,
+          idArmado: args?['editId'],
+          nombreArmado: args?['name'],
+          seleccionados: args?['seleccionados'],
+          esAmd: args?['esAmd'] ?? true,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/search-component',
+      builder: (context, state) => const SearchComponentScreen(),
+    ),
 
     GoRoute(
       path: '/testing',

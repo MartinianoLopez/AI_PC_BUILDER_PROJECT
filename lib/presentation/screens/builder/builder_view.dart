@@ -22,8 +22,8 @@ class ComponenetsView extends StatefulWidget {
   final int initialBudget;
   final String? idArmado; // ID del documento en Firestore (armado)
   final String? nombreArmado; // nombre actual del armado (si ya existía)
-  final List<Component?>? seleccionados; 
-  final bool esAmd;  
+  final List<Component?>? seleccionados;
+  final bool esAmd;
 
   @override
   State<ComponenetsView> createState() => _ComponentsViewState();
@@ -34,28 +34,26 @@ class _ComponentsViewState extends State<ComponenetsView> {
 
   late int budget;
 
-@override
-void initState() {
-  super.initState();
-  budget = widget.initialBudget;
+  @override
+  void initState() {
+    super.initState();
+    budget = widget.initialBudget;
 
-  WidgetsBinding.instance.addPostFrameCallback((_) async {
-    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final provider = Provider.of<ComponentsProvider>(context, listen: false);
 
-    // Restaurar AMD/Intel desde lo guardado
-    provider.esAmd = widget.esAmd;
+      // Restaurar AMD/Intel desde lo guardado
+      provider.esAmd = widget.esAmd;
 
-    // Importar componentes solo si aún no están cargados
-    await provider.importarComponentes();
+      // Importar componentes solo si aún no están cargados
+      await provider.importarComponentes();
 
-    // Restaurar selección de sliders si hay valores guardados
-    if (widget.seleccionados != null && widget.seleccionados!.isNotEmpty) {
-      provider.setAllSelected(widget.seleccionados!);
-    }
-  });
-}
-
-
+      // Restaurar selección de sliders si hay valores guardados
+      if (widget.seleccionados != null && widget.seleccionados!.isNotEmpty) {
+        provider.setAllSelected(widget.seleccionados!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,121 +152,128 @@ class _ComponentSliderState extends State<_ComponentSlider> {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  // Para que el slider y texto tengan espacio flexible
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        component.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+      child: InkWell(
+        onTap: () => context.push('/search-component'),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    // Para que el slider y texto tengan espacio flexible
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          component.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Slider(
-                        value: currentPosition,
-                        min: 0,
-                        max: (widget.components.length - 1).toDouble(),
-                        divisions:
-                            (widget.components.length > 1)
-                                ? widget.components.length
-                                : null,
-                        onChanged: (value) {
-                          setState(() {
-                            currentPosition = value;
-                          });
-                          provider.setSelected(
-                            widget.posicion,
-                            widget.components[value.toInt()],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                GestureDetector(
-                  onLongPress:
-                      () => {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text(component.name),
-                              content: Text(
-                                "\$ ${component.price.toStringAsFixed(2)}",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("OK"),
-                                ),
-                              ],
+                        const SizedBox(height: 8),
+                        Slider(
+                          value: currentPosition,
+                          min: 0,
+                          max: (widget.components.length - 1).toDouble(),
+                          divisions:
+                              (widget.components.length > 1)
+                                  ? widget.components.length
+                                  : null,
+                          onChanged: (value) {
+                            setState(() {
+                              currentPosition = value;
+                            });
+                            provider.setSelected(
+                              widget.posicion,
+                              widget.components[value.toInt()],
                             );
                           },
                         ),
-                      },
-                  child: Column(
-                    children: [
-                      if (component.image == 'none')
-                        const Icon(Icons.block, size: 70)
-                      else if (component.image.trim().isNotEmpty)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            component.image,
-                            width: 70,
-                            height: 70,
-                            cacheWidth: 140,
-                            cacheHeight: 140,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
-                            errorBuilder:
-                                (_, __, ___) =>
-                                    const Icon(Icons.broken_image, size: 70),
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const SizedBox(
-                                width: 70,
-                                height: 70,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onLongPress:
+                        () => {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(component.name),
+                                content: Text(
+                                  "\$ ${component.price.toStringAsFixed(2)}",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text("OK"),
+                                  ),
+                                ],
                               );
                             },
                           ),
-                        )
-                      else
-                        const Icon(Icons.image_not_supported, size: 70),
-                      const SizedBox(height: 4),
-                      Text(
-                        formattedPrice,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
+                        },
+                    child: Column(
+                      children: [
+                        if (component.image == 'none')
+                          const Icon(Icons.block, size: 70)
+                        else if (component.image.trim().isNotEmpty)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              component.image,
+                              width: 70,
+                              height: 70,
+                              cacheWidth: 140,
+                              cacheHeight: 140,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high,
+                              errorBuilder:
+                                  (_, __, ___) =>
+                                      const Icon(Icons.broken_image, size: 70),
+                              loadingBuilder: (
+                                context,
+                                child,
+                                loadingProgress,
+                              ) {
+                                if (loadingProgress == null) return child;
+                                return const SizedBox(
+                                  width: 70,
+                                  height: 70,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        else
+                          const Icon(Icons.image_not_supported, size: 70),
+                        const SizedBox(height: 4),
+                        Text(
+                          formattedPrice,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -279,23 +284,21 @@ class _RouteButtons extends StatelessWidget {
   const _RouteButtons();
 
   Future<void> _analizarCompatibilidadConIA(BuildContext context) async {
-    final provider = Provider.of<ComponentsProvider>(
-      context,
-      listen: false,
-    );
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        content: Row(
-          children: const [
-            CircularProgressIndicator(),
-            SizedBox(width: 20),
-            Expanded(child: Text("Analizando compatibilidad con IA...")),
-          ],
-        ),
-      ),
+      builder:
+          (_) => AlertDialog(
+            content: Row(
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Expanded(child: Text("Analizando compatibilidad con IA...")),
+              ],
+            ),
+          ),
     );
 
     final iaWarning = await checkCompatibilityWithAI(
@@ -308,25 +311,23 @@ class _RouteButtons extends StatelessWidget {
     if (iaWarning != null && iaWarning.trim().isNotEmpty) {
       await showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          title: Row(
-            children: const [
-              Icon(Icons.info_outline, color: Colors.green),
-              SizedBox(width: 8),
-              Text('Verificación IA'),
-            ],
-          ),
-          content: Text(
-            iaWarning,
-            style: const TextStyle(fontSize: 14),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cerrar'),
+        builder:
+            (_) => AlertDialog(
+              title: Row(
+                children: const [
+                  Icon(Icons.info_outline, color: Colors.green),
+                  SizedBox(width: 8),
+                  Text('Verificación IA'),
+                ],
+              ),
+              content: Text(iaWarning, style: const TextStyle(fontSize: 14)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cerrar'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -449,15 +450,18 @@ class _RouteButtons extends StatelessWidget {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (_) => AlertDialog(
-                      content: Row(
-                        children: const [
-                          CircularProgressIndicator(),
-                          SizedBox(width: 20),
-                          Expanded(child: Text("La IA está armando tu PC...")),
-                        ],
-                      ),
-                    ),
+                    builder:
+                        (_) => AlertDialog(
+                          content: Row(
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(width: 20),
+                              Expanded(
+                                child: Text("La IA está armando tu PC..."),
+                              ),
+                            ],
+                          ),
+                        ),
                   );
                   print("💰 Presupuesto pasado a IA: ${screen!.initialBudget}");
 
@@ -474,37 +478,39 @@ class _RouteButtons extends StatelessWidget {
                   if (!context.mounted) return;
                   await showDialog(
                     context: context,
-                    builder: (_) => AlertDialog(
-                      title: Text(
-                        provider.esAmd
-                            ? "Armado AMD sugerido"
-                            : "Armado Intel sugerido",
-                      ),
-                      content: Text(
-                        "La IA ha generado una configuración compatible basada en componentes ${provider.esAmd ? 'AMD' : 'Intel'}. Podés revisarla y ajustarla si lo deseás.",
-                      ),
-                      actions: [
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("OK"),
+                    builder:
+                        (_) => AlertDialog(
+                          title: Text(
+                            provider.esAmd
+                                ? "Armado AMD sugerido"
+                                : "Armado Intel sugerido",
+                          ),
+                          content: Text(
+                            "La IA ha generado una configuración compatible basada en componentes ${provider.esAmd ? 'AMD' : 'Intel'}. Podés revisarla y ajustarla si lo deseás.",
+                          ),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text("OK"),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
                   );
                 },
                 child: const Text('Generar PC'),
               ),
               Consumer<ComponentsProvider>(
-                builder: (context, provider, _) => Row(
-                  children: [
-                    const Text("AMD"),
-                    Switch(
-                      value: provider.esAmd,
-                      onChanged: (_) => provider.cambiarAmdOIntel(),
+                builder:
+                    (context, provider, _) => Row(
+                      children: [
+                        const Text("AMD"),
+                        Switch(
+                          value: provider.esAmd,
+                          onChanged: (_) => provider.cambiarAmdOIntel(),
+                        ),
+                        const Text("Intel"),
+                      ],
                     ),
-                    const Text("Intel"),
-                  ],
-                ),
               ),
             ],
           ),
