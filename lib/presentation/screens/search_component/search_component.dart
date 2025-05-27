@@ -1,6 +1,8 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/services/firebase_components_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class SearchComponentScreen extends StatefulWidget {
   final int category;
@@ -51,6 +53,9 @@ class _SearchComponentScreenState extends State<SearchComponentScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SearchBar(
+                        padding: WidgetStatePropertyAll(
+                          EdgeInsets.symmetric(horizontal: 16.0),
+                        ),
                         leading: const Icon(Icons.search),
                         hintText: "Buscar componente",
                         onChanged: (text) {
@@ -90,18 +95,30 @@ class ComponentList extends StatelessWidget {
           final component = components[index];
           return Card(
             margin: EdgeInsets.all(12),
-            child: ListTile(
-              leading: Image.network(
-                component.image,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.broken_image, size: 60, color: Colors.grey);
-                },
+            child: InkWell(
+              onTap: () {
+                // Agregar a currentArmado
+                context.pop();
+              },
+              child: ListTile(
+                leading: Image.network(
+                  component.image,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.broken_image,
+                      size: 60,
+                      color: Colors.grey,
+                    );
+                  },
+                ),
+                title: Text(component.name),
+                subtitle: Text(
+                  '\$${NumberFormat.currency(locale: 'es_AR', symbol: '\$', decimalDigits: 2).format(component.price)}',
+                ),
               ),
-              title: Text(component.name),
-              subtitle: Text('\$${component.price.toStringAsFixed(2)}'),
             ),
           );
         },

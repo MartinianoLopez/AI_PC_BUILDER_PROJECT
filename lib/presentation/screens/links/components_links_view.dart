@@ -166,7 +166,7 @@ class _RouteButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String links = components.map((c) => c?.link ?? '').join(' ');
+    String links = components.map((c) => c?.link ?? '').join('\n');
     return Container(
       padding: EdgeInsets.all(12),
       child: Row(
@@ -174,12 +174,126 @@ class _RouteButtons extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: links));
+              // await Clipboard.setData(ClipboardData(text: links));
+              showModalBottomSheet(
+                context: context,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                builder: (context) {
+                  return ShareOptionsSheet(links: links);
+                },
+              );
             },
-            child: const Text('Copiar links de compra'),
+            child: const Text('Compartir enlaces de compra'),
           ),
         ],
       ),
+    );
+  }
+}
+
+class ShareOptionsSheet extends StatelessWidget {
+  final String links;
+  const ShareOptionsSheet({super.key, required this.links});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 80,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey[700],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          InkWell(
+            onTap: () async {
+              await Clipboard.setData(ClipboardData(text: links));
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.link),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Copiar enlaces de compra',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          Wrap(
+            spacing: 24,
+            runSpacing: 16,
+            alignment: WrapAlignment.center,
+            children: [
+              _ShareIcon(
+                icon: Icons.sms,
+                label: "Mensajes",
+                onTap: () {
+                  final smsUri = Uri.parse('sms:?body=$links');
+                  launchUrl(smsUri);
+                },
+              ),
+              _ShareIcon(
+                icon: Icons.phone,
+                label: "WhatsApp",
+                backgroundColor: Colors.green,
+                onTap: () {
+                  final whatsappUri = Uri.parse('https://wa.me/?text=$links');
+                  launchUrl(whatsappUri);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShareIcon extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color backgroundColor;
+
+  const _ShareIcon({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.backgroundColor = Colors.grey,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: CircleAvatar(
+            radius: 28,
+            backgroundColor: backgroundColor,
+            child: Icon(icon, size: 28),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(label),
+      ],
     );
   }
 }
