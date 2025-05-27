@@ -121,166 +121,144 @@ class _ComponentSlider extends StatefulWidget {
 }
 
 class _ComponentSliderState extends State<_ComponentSlider> {
-  double currentPosition = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    final provider = Provider.of<ComponentsProvider>(context, listen: false);
-    final selectedIndex = provider.getSelected(widget.posicion);
-
-    currentPosition =
-        (selectedIndex >= 0 &&
-                selectedIndex <
-                    widget
-                        .components
-                        .length) //verifica que este dentro del rango para evitar errores
-            ? selectedIndex.toDouble()
-            : 0;
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (widget.components.isEmpty) return const SizedBox();
-    final provider = Provider.of<ComponentsProvider>(context);
-    final component = widget.components[currentPosition.toInt()];
-    final formattedPrice = NumberFormat.currency(
-      locale: 'es_AR',
-      symbol: '\$',
-      decimalDigits: 2,
-    ).format(component.price);
+    return Consumer<ComponentsProvider>(
+      builder: (context, provider, _) {
+        if (widget.components.isEmpty) return const SizedBox();
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: InkWell(
-        onTap:
+        int selectedIndex = provider.getSelected(widget.posicion);
+        selectedIndex = (selectedIndex >= 0 &&
+                selectedIndex < widget.components.length)
+            ? selectedIndex
+            : 0;
+
+        final component = widget.components[selectedIndex];
+        final formattedPrice = NumberFormat.currency(
+          locale: 'es_AR',
+          symbol: '\$',
+          decimalDigits: 2,
+        ).format(component.price);
+
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: InkWell(
             //ESTO ESTA MAL, TODO: Cambiar "category" por el string categoria para poder hacer fetch segun el nombre del doc en firestore
-            () => context.pushNamed(
+            onTap: () => context.pushNamed(
               'search-component',
               pathParameters: {'category': widget.posicion.toString()},
             ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    // Para que el slider y texto tengan espacio flexible
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          component.name,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Slider(
-                          value: currentPosition,
-                          min: 0,
-                          max: (widget.components.length - 1).toDouble(),
-                          divisions:
-                              (widget.components.length > 1)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              component.name,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Slider(
+                              value: selectedIndex.toDouble(),
+                              min: 0,
+                              max: (widget.components.length - 1).toDouble(),
+                              divisions: widget.components.length > 1
                                   ? widget.components.length
                                   : null,
-                          onChanged: (value) {
-                            setState(() {
-                              currentPosition = value;
-                            });
-                            provider.setSelected(
-                              widget.posicion,
-                              widget.components[value.toInt()],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onLongPress:
-                        () => {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(component.name),
-                                content: Text(
-                                  "\$ ${component.price.toStringAsFixed(2)}",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text("OK"),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        },
-                    child: Column(
-                      children: [
-                        if (component.image == 'none')
-                          const Icon(Icons.block, size: 70)
-                        else if (component.image.trim().isNotEmpty)
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              component.image,
-                              width: 70,
-                              height: 70,
-                              cacheWidth: 140,
-                              cacheHeight: 140,
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high,
-                              errorBuilder:
-                                  (_, __, ___) =>
-                                      const Icon(Icons.broken_image, size: 70),
-                              loadingBuilder: (
-                                context,
-                                child,
-                                loadingProgress,
-                              ) {
-                                if (loadingProgress == null) return child;
-                                return const SizedBox(
-                                  width: 70,
-                                  height: 70,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
+                              onChanged: (value) {
+                                provider.setSelected(
+                                  widget.posicion,
+                                  widget.components[value.toInt()],
                                 );
                               },
                             ),
-                          )
-                        else
-                          const Icon(Icons.image_not_supported, size: 70),
-                        const SizedBox(height: 4),
-                        Text(
-                          formattedPrice,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onLongPress: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: Text(component.name),
+                              content: Text(
+                                "\$ ${component.price.toStringAsFixed(2)}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            if (component.image == 'none')
+                              const Icon(Icons.block, size: 70)
+                            else if (component.image.trim().isNotEmpty)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  component.image,
+                                  width: 70,
+                                  height: 70,
+                                  cacheWidth: 140,
+                                  cacheHeight: 140,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                  errorBuilder: (_, __, ___) =>
+                                      const Icon(Icons.broken_image, size: 70),
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const SizedBox(
+                                      width: 70,
+                                      height: 70,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            else
+                              const Icon(Icons.image_not_supported, size: 70),
+                            const SizedBox(height: 4),
+                            Text(
+                              formattedPrice,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
