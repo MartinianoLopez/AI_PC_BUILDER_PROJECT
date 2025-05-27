@@ -283,7 +283,7 @@ class MainBodyState extends State<_MainBody> {
                               final result = await context.push(
                                 '/components',
                                 extra: {
-                                  'budget': total,
+                                  'budget': total.round(),
                                   'editId': docId,
                                   'name': name,
                                   'seleccionados': componentesGuardados,
