@@ -58,7 +58,10 @@ class MainBodyState extends State<_MainBody> {
     _loadSavedConfigurations();
   }
 
-  void solicitudDeIngresoAlArmador(String inputBudget, BuildContext context) {
+  void solicitudDeIngresoAlArmador(
+    String inputBudget,
+    BuildContext context,
+  ) async {
     final int budget = int.tryParse(inputBudget) ?? 0;
 
     if (budget < 399999) {
@@ -81,7 +84,12 @@ class MainBodyState extends State<_MainBody> {
       return;
     }
 
-    context.push('/components', extra: {'budget': budget});
+    //context.push('/components', extra: {'budget': budget});
+    final result = await context.push('/components', extra: {'budget': budget});
+    if (result == true) {
+      setState(() => loadingSaved = true);
+      _loadSavedConfigurations();
+    }
   }
 
   void _mostrarAlerta(
@@ -272,16 +280,20 @@ class MainBodyState extends State<_MainBody> {
                               );
 
                               // Pasa seleccionados y esAmd al editar
-                              context.push(
+                              final result = await context.push(
                                 '/components',
                                 extra: {
-                                  'budget': total.round(),
+                                  'budget': total,
                                   'editId': docId,
                                   'name': name,
                                   'seleccionados': componentesGuardados,
                                   'esAmd': config['esAmd'] ?? true,
                                 },
                               );
+                              if (result == true) {
+                                setState(() => loadingSaved = true);
+                                _loadSavedConfigurations();
+                              }
                             },
                           ),
                           IconButton(

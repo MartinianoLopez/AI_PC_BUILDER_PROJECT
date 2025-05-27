@@ -435,6 +435,8 @@ class _RouteButtons extends StatelessWidget {
                           ),
                         ),
                       );
+                      Navigator.pop(context, true); // <- Esta línea hace que HomeScreen sepa que debe recargar
+
                     }
                   } catch (e) {
                     if (context.mounted) {
