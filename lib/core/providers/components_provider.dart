@@ -76,6 +76,8 @@ class ComponentsProvider with ChangeNotifier {
     }
     isLoading = false;
     notifyListeners();
+    print("🧠 Importación de componentes llamada desde Home.");
+
   }
 
   void setSelected(int index, Component component) {

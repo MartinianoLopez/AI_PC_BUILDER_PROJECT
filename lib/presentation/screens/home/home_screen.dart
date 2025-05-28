@@ -56,6 +56,11 @@ class MainBodyState extends State<_MainBody> {
   void initState() {
     super.initState();
     _loadSavedConfigurations();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ComponentsProvider>(context, listen: false);
+      provider.importarComponentes();
+    });
   }
 
   void solicitudDeIngresoAlArmador(
@@ -129,6 +134,8 @@ class MainBodyState extends State<_MainBody> {
 
   @override
   Widget build(BuildContext context) {
+    final componentsProvider = Provider.of<ComponentsProvider>(context);
+
     return Center(
       child: SizedBox(
         width: 700,
@@ -175,6 +182,26 @@ class MainBodyState extends State<_MainBody> {
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
+
+              if (componentsProvider.isLoading) ...[
+                const SizedBox(height: 20),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "Importando enlaces de tus armados guardados...",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
 
               ListView.builder(
                 shrinkWrap: true,
