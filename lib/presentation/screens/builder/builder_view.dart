@@ -127,7 +127,8 @@ class _ComponentSliderState extends State<_ComponentSlider> {
       builder: (context, provider, _) {
         if (widget.components.isEmpty) return const SizedBox();
 
-        int selectedIndex = provider.getSelected(widget.posicion);
+int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
+        
         selectedIndex = (selectedIndex >= 0 &&
                 selectedIndex < widget.components.length)
             ? selectedIndex

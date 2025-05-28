@@ -130,6 +130,16 @@ void setAllSelected(List<Component?> newSeleccionados, {BuildContext? context}) 
     esAmd = !esAmd;
     notifyListeners();
   }
+int getSelectedIndexParaVista(int vistaIndex) {
+  final seleccion = seleccionados.firstWhere(
+    (s) => getComponents()[vistaIndex].any((c) => c.id == s?.id),
+    orElse: () => null,
+  );
+
+  if (seleccion == null) return 0;
+
+  return getComponents()[vistaIndex].indexWhere((c) => c.id == seleccion.id);
+}
 
   // sirve para obtener los componentes sin los que no son del amd o intel seleccionado
   List<List<Component>> getComponents() {
