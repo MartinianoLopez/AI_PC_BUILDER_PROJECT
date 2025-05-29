@@ -95,7 +95,6 @@ class _ComponentsViewState extends State<ComponenetsView> {
 
 class BuilderView extends StatelessWidget {
   final List<List<Component>> components;
-
   const BuilderView({super.key, required this.components});
 
   @override
@@ -123,16 +122,17 @@ class _ComponentSlider extends StatefulWidget {
 class _ComponentSliderState extends State<_ComponentSlider> {
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ComponentsProvider>(context, listen: true);
+    final categorias = provider.categoriasPorMarca;
+
     return Consumer<ComponentsProvider>(
       builder: (context, provider, _) {
         if (widget.components.isEmpty) return const SizedBox();
-
-int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
-        
-        selectedIndex = (selectedIndex >= 0 &&
-                selectedIndex < widget.components.length)
-            ? selectedIndex
-            : 0;
+        int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
+        selectedIndex =
+            (selectedIndex >= 0 && selectedIndex < widget.components.length)
+                ? selectedIndex
+                : 0;
 
         final component = widget.components[selectedIndex];
         final formattedPrice = NumberFormat.currency(
@@ -145,10 +145,11 @@ int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: InkWell(
             //ESTO ESTA MAL, TODO: Cambiar "category" por el string categoria para poder hacer fetch segun el nombre del doc en firestore
-            onTap: () => context.pushNamed(
-              'search-component',
-              pathParameters: {'category': widget.posicion.toString()},
-            ),
+            onTap:
+                () => context.pushNamed(
+                  'search-component',
+                  pathParameters: {'category': categorias[widget.posicion]},
+                ),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -173,9 +174,10 @@ int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
                               value: selectedIndex.toDouble(),
                               min: 0,
                               max: (widget.components.length - 1).toDouble(),
-                              divisions: widget.components.length > 1
-                                  ? widget.components.length
-                                  : null,
+                              divisions:
+                                  widget.components.length > 1
+                                      ? widget.components.length
+                                      : null,
                               onChanged: (value) {
                                 provider.setSelected(
                                   widget.posicion,
@@ -191,20 +193,23 @@ int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
                         onLongPress: () {
                           showDialog(
                             context: context,
-                            builder: (_) => AlertDialog(
-                              title: Text(component.name),
-                              content: Text(
-                                "\$ ${component.price.toStringAsFixed(2)}",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text("OK"),
+                            builder:
+                                (_) => AlertDialog(
+                                  title: Text(component.name),
+                                  content: Text(
+                                    "\$ ${component.price.toStringAsFixed(2)}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
                           );
                         },
                         child: Column(
@@ -222,10 +227,16 @@ int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
                                   cacheHeight: 140,
                                   fit: BoxFit.cover,
                                   filterQuality: FilterQuality.high,
-                                  errorBuilder: (_, __, ___) =>
-                                      const Icon(Icons.broken_image, size: 70),
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
+                                  errorBuilder:
+                                      (_, __, ___) => const Icon(
+                                        Icons.broken_image,
+                                        size: 70,
+                                      ),
+                                  loadingBuilder: (
+                                    context,
+                                    child,
+                                    loadingProgress,
+                                  ) {
                                     if (loadingProgress == null) return child;
                                     return const SizedBox(
                                       width: 70,
@@ -414,8 +425,10 @@ class _RouteButtons extends StatelessWidget {
                           ),
                         ),
                       );
-                      Navigator.pop(context, true); // <- Esta línea hace que HomeScreen sepa que debe recargar
-
+                      Navigator.pop(
+                        context,
+                        true,
+                      ); // <- Esta línea hace que HomeScreen sepa que debe recargar
                     }
                   } catch (e) {
                     if (context.mounted) {

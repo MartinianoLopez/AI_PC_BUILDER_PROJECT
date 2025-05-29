@@ -46,7 +46,7 @@ final GoRouter appRouter = GoRouter(
       name: 'search-component',
       builder: (context, state) {
         final categoryStr = state.pathParameters['category'];
-        final category = int.tryParse(categoryStr ?? '') ?? -1;
+        final category = categoryStr ?? 'null';
         return SearchComponentScreen(category: category);
       },
     ),

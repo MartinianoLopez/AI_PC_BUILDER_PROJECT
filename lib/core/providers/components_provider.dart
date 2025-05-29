@@ -33,6 +33,28 @@ class ComponentsProvider with ChangeNotifier {
     "Gabinete",
     "Fuente de Poder",
   ];
+
+  List<String> get categoriasPorMarca =>
+      esAmd
+          ? [
+            "procesador_amd",
+            "motherboard_amd",
+            "memoria_ram",
+            "ssd",
+            "placa_video",
+            "gabinete",
+            "fuente",
+          ]
+          : [
+            "procesador_intel",
+            "motherboard_intel",
+            "memoria_ram",
+            "ssd",
+            "placa_video",
+            "gabinete",
+            "fuente",
+          ];
+
   double get total =>
       seleccionados.fold(0.0, (sum, comp) => sum + (comp?.price ?? 0));
 
@@ -77,7 +99,6 @@ class ComponentsProvider with ChangeNotifier {
     isLoading = false;
     notifyListeners();
     print("🧠 Importación de componentes llamada desde Home.");
-
   }
 
   void setSelected(int index, Component component) {
@@ -85,61 +106,67 @@ class ComponentsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-int getSelected(int posicion) {
-  final selected = seleccionados[posicion];
-  if (selected == null) return 0;
+  int getSelected(int posicion) {
+    final selected = seleccionados[posicion];
+    if (selected == null) return 0;
 
-  final componentesFiltrados = getComponents();
+    final componentesFiltrados = getComponents();
 
-  // Protegemos si hay un desajuste de índices
-  if (posicion >= componentesFiltrados.length) return 0;
+    // Protegemos si hay un desajuste de índices
+    if (posicion >= componentesFiltrados.length) return 0;
 
-  final index = componentesFiltrados[posicion].indexWhere((c) => c.id == selected.id);
-  return index >= 0 ? index : 0; // evitar -1 porque genera un range error
-}
-
-
-void setAllSelected(List<Component?> newSeleccionados, {BuildContext? context}) {
-  print("📦 Largo nuevo: ${newSeleccionados.length}");
-  print("📦 Largo actual: ${seleccionados.length}");
-
-  if (newSeleccionados.length != seleccionados.length) {
-    print("⚠️ Tamaños desalineados: adaptando lista...");
-    seleccionados = List.generate(
-      seleccionados.length,
-      (i) => i < newSeleccionados.length ? newSeleccionados[i] : null,
+    final index = componentesFiltrados[posicion].indexWhere(
+      (c) => c.id == selected.id,
     );
-
-    if (context != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("⚠️ Algunos componentes no fueron cargados correctamente."),
-          backgroundColor: Colors.orange,
-        ),
-      );
-    }
-  } else {
-    seleccionados = newSeleccionados;
+    return index >= 0 ? index : 0; // evitar -1 porque genera un range error
   }
 
-  notifyListeners();
-}
+  void setAllSelected(
+    List<Component?> newSeleccionados, {
+    BuildContext? context,
+  }) {
+    print("📦 Largo nuevo: ${newSeleccionados.length}");
+    print("📦 Largo actual: ${seleccionados.length}");
 
+    if (newSeleccionados.length != seleccionados.length) {
+      print("⚠️ Tamaños desalineados: adaptando lista...");
+      seleccionados = List.generate(
+        seleccionados.length,
+        (i) => i < newSeleccionados.length ? newSeleccionados[i] : null,
+      );
+
+      if (context != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "⚠️ Algunos componentes no fueron cargados correctamente.",
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } else {
+      seleccionados = newSeleccionados;
+    }
+
+    notifyListeners();
+  }
 
   void cambiarAmdOIntel() {
     esAmd = !esAmd;
     notifyListeners();
   }
-int getSelectedIndexParaVista(int vistaIndex) {
-  final seleccion = seleccionados.firstWhere(
-    (s) => getComponents()[vistaIndex].any((c) => c.id == s?.id),
-    orElse: () => null,
-  );
 
-  if (seleccion == null) return 0;
+  int getSelectedIndexParaVista(int vistaIndex) {
+    final seleccion = seleccionados.firstWhere(
+      (s) => getComponents()[vistaIndex].any((c) => c.id == s?.id),
+      orElse: () => null,
+    );
 
-  return getComponents()[vistaIndex].indexWhere((c) => c.id == seleccion.id);
-}
+    if (seleccion == null) return 0;
+
+    return getComponents()[vistaIndex].indexWhere((c) => c.id == seleccion.id);
+  }
 
   // sirve para obtener los componentes sin los que no son del amd o intel seleccionado
   List<List<Component>> getComponents() {

@@ -50,12 +50,12 @@ Future<Map<String, List<Component>>> fetchComponentsFromFirestore() async {
 }
 
 Future<List<Component>> fetchComponentsByCategory({
-  required int categoryIndex,
+  required String category,
 }) async {
   final querySnapshot =
       await firestore
           .collection('productos_try')
-          .doc(categorias[categoryIndex])
+          .doc(category)
           .collection('items')
           .orderBy('precio')
           .get();

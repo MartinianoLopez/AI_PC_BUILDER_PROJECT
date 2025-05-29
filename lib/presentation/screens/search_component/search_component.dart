@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class SearchComponentScreen extends StatefulWidget {
-  final int category;
+  final String category;
 
   const SearchComponentScreen({super.key, required this.category});
 
@@ -27,9 +27,7 @@ class _SearchComponentScreenState extends State<SearchComponentScreen> {
   }
 
   Future<void> _loadComponents() async {
-    final result = await fetchComponentsByCategory(
-      categoryIndex: widget.category,
-    );
+    final result = await fetchComponentsByCategory(category: widget.category);
 
     setState(() {
       components = result;
