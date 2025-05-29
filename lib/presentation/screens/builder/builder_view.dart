@@ -144,7 +144,6 @@ class _ComponentSliderState extends State<_ComponentSlider> {
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: InkWell(
-            //ESTO ESTA MAL, TODO: Cambiar "category" por el string categoria para poder hacer fetch segun el nombre del doc en firestore
             onTap:
                 () => context.pushNamed(
                   'search-component',
