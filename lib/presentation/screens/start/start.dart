@@ -12,7 +12,7 @@ class StartScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/images/logo.png', height: 150),
+            Image.asset('assets/images/Logo.png', height: 150),
             const SizedBox(height: 50),
             ElevatedButton(
               onPressed: () => context.go('/registration'),

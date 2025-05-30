@@ -143,7 +143,7 @@ class MainBodyState extends State<_MainBody> {
           child: Column(
             children: [
               Image.asset(
-                'assets/images/logo.png',
+                'assets/images/Logo.png',
                 height: 300,
                 fit: BoxFit.cover,
               ),
@@ -287,10 +287,6 @@ class MainBodyState extends State<_MainBody> {
                               if (confirm != true) return;
                               if (!context.mounted) return;
 
-                              final provider = Provider.of<ComponentsProvider>(
-                                context,
-                                listen: false,
-                              );
                               List<Component>
                               componentesGuardados = List<Component>.from(
                                 (config['componentes'] as List)

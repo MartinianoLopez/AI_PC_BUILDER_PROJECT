@@ -302,7 +302,7 @@ class _RouteButtons extends StatelessWidget {
     if (!context.mounted) return;
     Navigator.of(context).pop();
 
-    if (iaWarning != null && iaWarning.trim().isNotEmpty) {
+    if (iaWarning.trim().isNotEmpty) {
       await showDialog(
         context: context,
         builder:
@@ -466,7 +466,7 @@ class _RouteButtons extends StatelessWidget {
                   final seleccionados = await autoArmadoSugerido(
                     armado: provider.components,
                     usarIntel: !provider.esAmd,
-                    budget: screen!.initialBudget,
+                    budget: screen.initialBudget,
                   );
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
@@ -501,12 +501,12 @@ class _RouteButtons extends StatelessWidget {
                 builder:
                     (context, provider, _) => Row(
                       children: [
-                        const Text("AMD"),
+                        const Text("Intel"),
                         Switch(
                           value: provider.esAmd,
                           onChanged: (_) => provider.cambiarAmdOIntel(),
                         ),
-                        const Text("Intel"),
+                        const Text("Amd"),
                       ],
                     ),
               ),
