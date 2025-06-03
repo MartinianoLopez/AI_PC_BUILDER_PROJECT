@@ -31,6 +31,8 @@ class ComponenetsView extends StatefulWidget {
 
 class _ComponentsViewState extends State<ComponenetsView> {
   bool loadingSaved = true;
+  Map<String, String> analisisIndividual = {};
+  String analisisGeneral = '';
 
   late int budget;
 
@@ -99,12 +101,49 @@ class BuilderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: components.length,
-      itemBuilder: (context, index) {
-        final currentComponents = components[index];
-        return _ComponentSlider(components: currentComponents, posicion: index);
-      },
+    final state = context.findAncestorStateOfType<_ComponentsViewState>();
+    final general = state?.analisisGeneral ?? '';
+
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 16),
+      children: [
+        // Sliders
+        for (var i = 0; i < components.length; i++)
+          _ComponentSlider(components: components[i], posicion: i),
+
+        // Análisis general de IA
+        if (general.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              color: Colors.black26,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '🔍 Análisis general IA',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.amber,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      general,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -125,9 +164,15 @@ class _ComponentSliderState extends State<_ComponentSlider> {
     final provider = Provider.of<ComponentsProvider>(context, listen: true);
     final categorias = provider.categoriasPorMarca;
 
+    // Para obtener el nombre de la categoría de este slider
+    final state = context.findAncestorStateOfType<_ComponentsViewState>();
+    final nombreCategoria = categorias[widget.posicion];
+    final textoAnalisis = state?.analisisIndividual[nombreCategoria] ?? '';
+
     return Consumer<ComponentsProvider>(
       builder: (context, provider, _) {
         if (widget.components.isEmpty) return const SizedBox();
+
         int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
         selectedIndex =
             (selectedIndex >= 0 && selectedIndex < widget.components.length)
@@ -184,6 +229,19 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                                 );
                               },
                             ),
+                            // 👇 Aquí mostramos el análisis individual debajo del slider
+                            if (textoAnalisis.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(
+                                  textoAnalisis,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.amber,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -284,9 +342,9 @@ class _RouteButtons extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder:
-          (_) => AlertDialog(
+          (_) => const AlertDialog(
             content: Row(
-              children: const [
+              children: [
                 CircularProgressIndicator(),
                 SizedBox(width: 20),
                 Expanded(child: Text("Analizando compatibilidad con IA...")),
@@ -295,38 +353,60 @@ class _RouteButtons extends StatelessWidget {
           ),
     );
 
-    final iaWarning = await checkCompatibilityWithAI(
+    final result = await checkCompatibilityWithAI(
       provider.seleccionados.whereType<Component>().toList(),
     );
+// 👇 Agregá estos prints acá:
+print("🧠 Análisis individual crudo:");
+print(result['individual']);
 
+print("📚 Categorías locales:");
+print(provider.categoriasPorMarca);
     if (!context.mounted) return;
     Navigator.of(context).pop();
 
-    if (iaWarning.trim().isNotEmpty) {
-      await showDialog(
-        context: context,
-        builder:
-            (_) => AlertDialog(
-              title: Row(
-                children: const [
-                  Icon(Icons.info_outline, color: Colors.green),
-                  SizedBox(width: 8),
-                  Text('Verificación IA'),
-                ],
-              ),
-              content: Text(iaWarning, style: const TextStyle(fontSize: 14)),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cerrar'),
-                ),
-              ],
-            ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Todo compatible según IA')),
-      );
+    // Guardar el análisis en el estado de la pantalla
+    final state = context.findAncestorStateOfType<_ComponentsViewState>();
+    if (state != null) {
+      state.setState(() {
+        state.analisisGeneral = result['general'] ?? '';
+        // Parseo simple: línea a línea, separando por ':'
+
+        
+        final parsed = <String, String>{};
+        final lineas = (result['individual'] ?? '').split('\n');
+        final categorias = provider.categoriasPorMarca;
+
+        for (final linea in lineas) {
+          final partes = linea.split(':');
+          if (partes.length >= 2) {
+            final clave = partes[0].trim().toLowerCase();
+            final contenido = partes.sublist(1).join(':').trim();
+
+            for (final categoria in categorias) {
+              final catNormalizada = categoria.toLowerCase();
+              if (clave.contains('cpu') &&
+                      catNormalizada.contains('procesador') ||
+                  clave.contains('procesador') &&
+                      catNormalizada.contains('procesador') ||
+                  clave.contains('ram') && catNormalizada.contains('memoria') ||
+                  clave.contains('mother') &&
+                      catNormalizada.contains('mother') ||
+                  clave.contains('ssd') && catNormalizada.contains('ssd') ||
+                  clave.contains('gabinete') &&
+                      catNormalizada.contains('gabinete') ||
+                  clave.contains('fuente') &&
+                      catNormalizada.contains('fuente') ||
+                  clave.contains('placa') && catNormalizada.contains('video') ||
+                  clave.contains('gpu') && catNormalizada.contains('video')) {
+                parsed[categoria] = contenido;
+                break;
+              }
+            }
+          }
+        }
+        state.analisisIndividual = parsed;
+      });
     }
   }
 
