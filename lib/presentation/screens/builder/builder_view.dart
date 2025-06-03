@@ -228,177 +228,186 @@ class _ComponentSlider extends StatefulWidget {
 }
 
 class _ComponentSliderState extends State<_ComponentSlider> {
-  @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<ComponentsProvider>(context, listen: true);
-    final categorias = provider.categoriasPorMarca;
+ 
+@override
+Widget build(BuildContext context) {
+  final provider = Provider.of<ComponentsProvider>(context, listen: true);
+  final categorias = provider.categoriasPorMarca;
 
-    // Para obtener el nombre de la categoría de este slider
-    final state = context.findAncestorStateOfType<_ComponentsViewState>();
-    final nombreCategoria = categorias[widget.posicion];
-    final textoAnalisis = state?.analisisIndividual[nombreCategoria] ?? '';
+  // Obtenemos el análisis individual según la categoría
+  final state = context.findAncestorStateOfType<_ComponentsViewState>();
+  final nombreCategoria = categorias[widget.posicion];
+  final textoAnalisis = state?.analisisIndividual[nombreCategoria] ?? '';
 
-    return Consumer<ComponentsProvider>(
-      builder: (context, provider, _) {
-        if (widget.components.isEmpty) return const SizedBox();
+  // 🔍 Filtro para decidir si el mensaje vale la pena mostrarse
+  final textoFiltrado = textoAnalisis.toLowerCase();
 
-        int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
-        selectedIndex =
-            (selectedIndex >= 0 && selectedIndex < widget.components.length)
-                ? selectedIndex
-                : 0;
+  final esMensajeGenerico =
+      textoFiltrado.startsWith('compatible con el') ||
+      textoFiltrado.startsWith('compatible con la') ||
+      textoFiltrado.startsWith('es compatible con') ||
+      textoFiltrado.startsWith('compatible con todos') ||
+      textoFiltrado.contains('compatible con el sistema') ||
+      textoFiltrado.contains('compatibles entre sí');
 
-        final component = widget.components[selectedIndex];
-        final formattedPrice = NumberFormat.currency(
-          locale: 'es_AR',
-          symbol: '\$',
-          decimalDigits: 2,
-        ).format(component.price);
+  final esMensajeUtil =
+      textoFiltrado.contains('no es compatible con') ||
+      textoFiltrado.contains('pero') ||
+      textoFiltrado.contains('mejor') ||
+      textoFiltrado.contains('podría') ||
+      !esMensajeGenerico;
 
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: InkWell(
-            onTap:
-                () => context.pushNamed(
-                  'search-component',
-                  pathParameters: {'category': categorias[widget.posicion]},
-                ),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              component.name,
+  return Consumer<ComponentsProvider>(
+    builder: (context, provider, _) {
+      if (widget.components.isEmpty) return const SizedBox();
+
+      int selectedIndex = provider.getSelectedIndexParaVista(widget.posicion);
+      selectedIndex =
+          (selectedIndex >= 0 && selectedIndex < widget.components.length)
+              ? selectedIndex
+              : 0;
+
+      final component = widget.components[selectedIndex];
+      final formattedPrice = NumberFormat.currency(
+        locale: 'es_AR',
+        symbol: '\$',
+        decimalDigits: 2,
+      ).format(component.price);
+
+      return Card(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: InkWell(
+          onTap: () => context.pushNamed(
+            'search-component',
+            pathParameters: {'category': categorias[widget.posicion]},
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            component.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Slider(
+                            value: selectedIndex.toDouble(),
+                            min: 0,
+                            max: (widget.components.length - 1).toDouble(),
+                            divisions: widget.components.length > 1
+                                ? widget.components.length
+                                : null,
+                            onChanged: (value) {
+                              provider.setSelected(
+                                widget.posicion,
+                                widget.components[value.toInt()],
+                              );
+                            },
+                          ),
+                          if (esMensajeUtil)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                textoAnalisis,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.amber,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onLongPress: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: Text(component.name),
+                            content: Text(
+                              "\$ ${component.price.toStringAsFixed(2)}",
                               style: const TextStyle(
-                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            Slider(
-                              value: selectedIndex.toDouble(),
-                              min: 0,
-                              max: (widget.components.length - 1).toDouble(),
-                              divisions:
-                                  widget.components.length > 1
-                                      ? widget.components.length
-                                      : null,
-                              onChanged: (value) {
-                                provider.setSelected(
-                                  widget.posicion,
-                                  widget.components[value.toInt()],
-                                );
-                              },
-                            ),
-                            // 👇 Aquí mostramos el análisis individual debajo del slider
-                            if (textoAnalisis.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(
-                                  textoAnalisis,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.amber,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text("OK"),
                               ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      GestureDetector(
-                        onLongPress: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  title: Text(component.name),
-                                  content: Text(
-                                    "\$ ${component.price.toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
-                                ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            if (component.image == 'none')
-                              const Icon(Icons.block, size: 70)
-                            else if (component.image.trim().isNotEmpty)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  component.image,
-                                  width: 70,
-                                  height: 70,
-                                  cacheWidth: 140,
-                                  cacheHeight: 140,
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high,
-                                  errorBuilder:
-                                      (_, __, ___) => const Icon(
-                                        Icons.broken_image,
-                                        size: 70,
+                            ],
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          if (component.image == 'none')
+                            const Icon(Icons.block, size: 70)
+                          else if (component.image.trim().isNotEmpty)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                component.image,
+                                width: 70,
+                                height: 70,
+                                cacheWidth: 140,
+                                cacheHeight: 140,
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.high,
+                                errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.broken_image, size: 70),
+                                loadingBuilder: (context, child, progress) {
+                                  if (progress == null) return child;
+                                  return const SizedBox(
+                                    width: 70,
+                                    height: 70,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
                                       ),
-                                  loadingBuilder: (
-                                    context,
-                                    child,
-                                    loadingProgress,
-                                  ) {
-                                    if (loadingProgress == null) return child;
-                                    return const SizedBox(
-                                      width: 70,
-                                      height: 70,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            else
-                              const Icon(Icons.image_not_supported, size: 70),
-                            const SizedBox(height: 4),
-                            Text(
-                              formattedPrice,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
+                                    ),
+                                  );
+                                },
                               ),
+                            )
+                          else
+                            const Icon(Icons.image_not_supported, size: 70),
+                          const SizedBox(height: 4),
+                          Text(
+                            formattedPrice,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
+
+
 }
 
 class _RouteButtons extends StatelessWidget {
