@@ -15,13 +15,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   bool _showVerifyButton = false;
-  
-   void _loginConEnv() async { // para hacer pruebas
-    final email = dotenv.env['EMAIL']?? "";
-    final password = dotenv.env['PASSWORD']?? "";
+
+  void _loginConEnv() async {
+    // para hacer pruebas
+    final email = dotenv.env['EMAIL'] ?? "";
+    final password = dotenv.env['PASSWORD'] ?? "";
 
     try {
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
       final isVerified = userCredential.user?.emailVerified ?? false;
 
@@ -52,7 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = passwordController.text.trim();
 
     try {
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
       final isVerified = userCredential.user?.emailVerified ?? false;
 
@@ -199,8 +202,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
-
-
-

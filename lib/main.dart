@@ -20,7 +20,6 @@ void main() async {
     // ignore: avoid_print
     print('❌ Error al conectar Firebase: $e');
   }
-  
 
   runApp(
     MultiProvider(
@@ -31,12 +30,10 @@ void main() async {
       child: const MainApp(),
     ),
   );
-  
 }
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
-  
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,9 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/services/openai_service.dart';
 
-Future<Map<String, String>> checkCompatibilityWithAI(List<Component> components) async {
+Future<Map<String, String>> checkCompatibilityWithAI(
+  List<Component> components,
+) async {
   final componentsDescription = components
       .map((c) => "- ${c.name} (\$${c.price.toStringAsFixed(2)} ARS)")
       .join("\n");
@@ -25,7 +27,7 @@ RAM: Podría aumentarse a 16GB para mejor rendimiento.
 
 [ANÁLISIS GENERAL]
 El armado está bien balanceado. Considerar fuente de mejor calidad.
-'''
+''',
     },
     {
       "role": "user",
@@ -34,8 +36,8 @@ Estos son los componentes:
 $componentsDescription
 
 ¿Podés verificar compatibilidad individual y general según el formato anterior?
-'''
-    }
+''',
+    },
   ];
 
   final openAI = OpenAIService();
@@ -65,9 +67,5 @@ $componentsDescription
     }
   }
 
-  return {
-    'individual': individual,
-    'general': general,
-  };
+  return {'individual': individual, 'general': general};
 }
-

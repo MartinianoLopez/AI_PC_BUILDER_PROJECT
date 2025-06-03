@@ -4,8 +4,11 @@ import 'package:ai_pc_builder_project/core/services/openai_service.dart';
 String normalizar(String texto) {
   return texto
       .toLowerCase()
-      .replaceAll(RegExp(r'[^a-z0-9]+'), ' ') // Reemplaza símbolos no alfanuméricos
-      .replaceAll(RegExp(r'\s+'), ' ')        // Colapsa múltiples espacios
+      .replaceAll(
+        RegExp(r'[^a-z0-9]+'),
+        ' ',
+      ) // Reemplaza símbolos no alfanuméricos
+      .replaceAll(RegExp(r'\s+'), ' ') // Colapsa múltiples espacios
       .trim();
 }
 
@@ -99,17 +102,18 @@ Elegí uno por categoría.
   print("📨 Respuesta OpenAI:\n$respuesta");
 
   // Paso 3: Limpiar respuesta y extraer nombres
-  final nombresIA = respuesta
-      .split('\n')
-      .map((line) {
-        final idx = line.indexOf(':');
-        if (idx != -1) {
-          line = line.substring(idx + 1);
-        }
-        return line.trim().split('(').first.trim();
-      })
-      .where((line) => line.isNotEmpty)
-      .toList();
+  final nombresIA =
+      respuesta
+          .split('\n')
+          .map((line) {
+            final idx = line.indexOf(':');
+            if (idx != -1) {
+              line = line.substring(idx + 1);
+            }
+            return line.trim().split('(').first.trim();
+          })
+          .where((line) => line.isNotEmpty)
+          .toList();
 
   // Paso 4: Mapear a los componentes
   List<Component?> seleccionados = List.filled(armado.length, null);
