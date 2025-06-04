@@ -1,8 +1,10 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
+import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:ai_pc_builder_project/core/services/firebase_components_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class SearchComponentScreen extends StatefulWidget {
   final String category;
@@ -18,7 +20,6 @@ class _SearchComponentScreenState extends State<SearchComponentScreen> {
   List<Component> filteredComponents = [];
   bool isLoadingComponents = true;
   String searchQuery = '';
-  List<String> names = ["Alice", "Bardo", "Charlie", "Diana", "Ethan"];
 
   @override
   void initState() {
@@ -69,7 +70,10 @@ class _SearchComponentScreenState extends State<SearchComponentScreen> {
                           });
                         },
                       ),
-                      ComponentList(components: filteredComponents),
+                      ComponentList(
+                        components: filteredComponents,
+                        category: widget.category,
+                      ),
                     ],
                   ),
         ),
@@ -79,13 +83,19 @@ class _SearchComponentScreenState extends State<SearchComponentScreen> {
 }
 
 class ComponentList extends StatelessWidget {
-  const ComponentList({super.key, required this.components});
+  const ComponentList({
+    super.key,
+    required this.components,
+    required this.category,
+  });
 
   final List<Component> components;
+  final String category;
 
   @override
   Widget build(BuildContext context) {
-    print(components);
+    final provider = Provider.of<ComponentsProvider>(context, listen: true);
+    print(provider.seleccionados);
     return Expanded(
       child: ListView.builder(
         itemCount: components.length,
@@ -96,6 +106,15 @@ class ComponentList extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 // Agregar a currentArmado
+
+                // Encuentro el index del componente en la lista
+                final index = provider.categoriasOrdenado.indexOf(category);
+                print(index);
+
+                // Cambio con el provider
+                provider.setSelected(index, component);
+
+                // Vuelvo al armador
                 context.pop();
               },
               child: ListTile(

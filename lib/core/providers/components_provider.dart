@@ -34,6 +34,7 @@ class ComponentsProvider with ChangeNotifier {
     "Fuente de Poder",
   ];
 
+  List<String> get categoriasOrdenado => orden;
   List<String> get categoriasPorMarca =>
       esAmd
           ? [
