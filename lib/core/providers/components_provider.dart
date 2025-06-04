@@ -103,6 +103,7 @@ class ComponentsProvider with ChangeNotifier {
   }
 
   void setSelected(int index, Component component) {
+    print("indice modificado: $index");
     seleccionados[index] = component.id == 'none' ? null : component;
     notifyListeners();
   }

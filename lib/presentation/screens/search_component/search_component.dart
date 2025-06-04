@@ -95,7 +95,6 @@ class ComponentList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ComponentsProvider>(context, listen: true);
-    print(provider.seleccionados);
     return Expanded(
       child: ListView.builder(
         itemCount: components.length,
@@ -108,12 +107,12 @@ class ComponentList extends StatelessWidget {
                 // Agregar a currentArmado
 
                 // Encuentro el index del componente en la lista
-                final index = provider.categoriasOrdenado.indexOf(category);
+                final index = provider.categoriasPorMarca.indexOf(category);
                 print(index);
 
                 // Cambio con el provider
                 provider.setSelected(index, component);
-
+                
                 // Vuelvo al armador
                 context.pop();
               },
