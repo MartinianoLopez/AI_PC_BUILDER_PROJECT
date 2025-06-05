@@ -38,6 +38,10 @@ class MainBodyState extends State<_MainBody> {
   bool loadingSaved = true;
 
   TextEditingController inputBudget = TextEditingController();
+  String selectedOption = 'Gamer';
+
+  // Lista de opciones
+  final List<String> options = ['Gamer', 'Oficina', 'Educación', 'Edición'];
 
   void _loadSavedConfigurations() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -65,6 +69,7 @@ class MainBodyState extends State<_MainBody> {
 
   void solicitudDeIngresoAlArmador(
     String inputBudget,
+    String selectedOption,
     BuildContext context,
   ) async {
     final int budget = int.tryParse(inputBudget) ?? 0;
@@ -90,7 +95,8 @@ class MainBodyState extends State<_MainBody> {
     }
 
     //context.push('/components', extra: {'budget': budget});
-    final result = await context.push('/components', extra: {'budget': budget});
+    print("home $selectedOption");
+    final result = await context.push('/components', extra: {'budget': budget, 'selectedOption': selectedOption});
     if (result == true) {
       setState(() => loadingSaved = true);
       _loadSavedConfigurations();
@@ -164,18 +170,66 @@ class MainBodyState extends State<_MainBody> {
                 ),
               ),
               const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 100),
-                child: ElevatedButton(
-                  onPressed: () {
-                    solicitudDeIngresoAlArmador(inputBudget.text, context);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(child: Text('Armar PC')),
+             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container( // selector drop down de tipo de computadora
+                  height: 48,
+                  width: 150,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 48, 49, 51),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: const Color.fromARGB(255, 210, 211, 212)),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedOption,
+                      icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                      dropdownColor: const Color.fromARGB(255, 48, 49, 51),
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedOption = newValue!;
+                        });
+                      },
+                      items: options.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
-              ),
+
+                const SizedBox(width: 16),
+
+                SizedBox(
+                  height: 48,
+                  width: 350,
+                  child: ElevatedButton( // Boton armar pc
+                    onPressed: () {
+                      solicitudDeIngresoAlArmador(inputBudget.text, selectedOption, context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 48, 49, 51),
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: const BorderSide(color: Color.fromARGB(255, 210, 211, 212)),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    child: const Text('Armar PC'),
+                  ),
+                ),
+              ],
+            ),
+
+
               const SizedBox(height: 30),
               const Text(
                 'Tus Armados Guardados:',

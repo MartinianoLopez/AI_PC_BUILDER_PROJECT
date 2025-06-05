@@ -33,6 +33,7 @@ final GoRouter appRouter = GoRouter(
 
         return ComponenetsView(
           initialBudget: args?['budget'] ?? 0,
+          selectedOption: args?['selectedOption'],
           idArmado: args?['editId'],
           nombreArmado: args?['name'],
           seleccionados: args?['seleccionados'],

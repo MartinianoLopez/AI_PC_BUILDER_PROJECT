@@ -17,6 +17,7 @@ class ComponenetsView extends StatefulWidget {
     this.nombreArmado,
     this.seleccionados,
     this.esAmd = true,
+    this.selectedOption,
   });
 
   final int initialBudget;
@@ -24,6 +25,7 @@ class ComponenetsView extends StatefulWidget {
   final String? nombreArmado; // nombre actual del armado (si ya existía)
   final List<Component?>? seleccionados;
   final bool esAmd;
+  final String? selectedOption;
 
   @override
   State<ComponenetsView> createState() => _ComponentsViewState();
@@ -59,6 +61,15 @@ class _ComponentsViewState extends State<ComponenetsView> {
         provider.setAllSelected(
           List.filled(provider.getComponents().length, null),
         );
+      }
+      if(widget.selectedOption != null){ // para que no se auto arme cuando se abre un guardado
+      final seleccionados = await autoArmadoSugerido(
+                          armado: provider.components,
+                          usarIntel: !provider.esAmd,
+                          budget: widget.initialBudget,
+                          selectedOption: widget.selectedOption,
+                        );
+      provider.setAllSelected(seleccionados);
       }
     });
   }
