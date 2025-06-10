@@ -183,6 +183,7 @@ class MainBodyState extends State<_MainBody> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
+                    hintText: "\$650.000",
                     labelText: '',
                   ),
                 ),
@@ -194,7 +195,7 @@ class MainBodyState extends State<_MainBody> {
                   Container(
                     // selector drop down de tipo de computadora
                     height: 48,
-                    width: 150,
+                    width: 140,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 48, 49, 51),
@@ -237,7 +238,7 @@ class MainBodyState extends State<_MainBody> {
 
                   SizedBox(
                     height: 48,
-                    width: 350,
+                    width: 240,
                     child: ElevatedButton(
                       // Boton armar pc
                       onPressed: () {
