@@ -62,14 +62,15 @@ class _ComponentsViewState extends State<ComponenetsView> {
           List.filled(provider.getComponents().length, null),
         );
       }
-      if(widget.selectedOption != null){ // para que no se auto arme cuando se abre un guardado
-      final seleccionados = await autoArmadoSugerido(
-                          armado: provider.components,
-                          usarIntel: !provider.esAmd,
-                          budget: widget.initialBudget,
-                          selectedOption: widget.selectedOption,
-                        );
-      provider.setAllSelected(seleccionados);
+      if (widget.selectedOption != null) {
+        // para que no se auto arme cuando se abre un guardado
+        final seleccionados = await autoArmadoSugerido(
+          armado: provider.components,
+          usarIntel: !provider.esAmd,
+          budget: widget.initialBudget,
+          selectedOption: widget.selectedOption,
+        );
+        provider.setAllSelected(seleccionados);
       }
     });
   }
@@ -532,182 +533,204 @@ class _RouteButtons extends StatelessWidget {
                         ? CrossAxisAlignment.stretch
                         : CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      child: Text(isEditing ? 'Actualizar' : 'Guardar'),
-                      onPressed: () async {
-                        final provider = Provider.of<ComponentsProvider>(
-                          context,
-                          listen: false,
-                        );
-                        final uid = FirebaseAuth.instance.currentUser?.uid;
-
-                        if (uid == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('❌ Usuario no logueado'),
+                  Flex(
+                    direction: Axis.horizontal,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          );
-                          return;
-                        }
-
-                        if (currentName?.trim().isEmpty ?? true) {
-                          await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Nombre del armado'),
-                                content: TextField(
-                                  autofocus: true,
-                                  onChanged: (value) {
-                                    currentName = value;
-                                  },
-                                  decoration: const InputDecoration(
-                                    hintText: "Ej: Mi PC gamer",
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('Cancelar'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('Guardar'),
-                                  ),
-                                ],
+                            label: Text(isEditing ? 'Actualizar' : 'Guardar'),
+                            icon: Icon(Icons.save),
+                            onPressed: () async {
+                              final provider = Provider.of<ComponentsProvider>(
+                                context,
+                                listen: false,
                               );
-                            },
-                          );
+                              final uid =
+                                  FirebaseAuth.instance.currentUser?.uid;
 
-                          if (currentName!.trim().isEmpty) return;
-                        }
+                              if (uid == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('❌ Usuario no logueado'),
+                                  ),
+                                );
+                                return;
+                              }
 
-                        try {
-                          final storage = UserConfigurationStorage();
+                              if (currentName?.trim().isEmpty ?? true) {
+                                await showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text('Nombre del armado'),
+                                      content: TextField(
+                                        autofocus: true,
+                                        onChanged: (value) {
+                                          currentName = value;
+                                        },
+                                        decoration: const InputDecoration(
+                                          hintText: "Ej: Mi PC gamer",
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed:
+                                              () => Navigator.pop(context),
+                                          child: const Text('Cancelar'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed:
+                                              () => Navigator.pop(context),
+                                          child: const Text('Guardar'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
 
-                          if (isEditing) {
-                            await storage.updateConfiguration(
-                              uid: uid,
-                              docId: screen!.idArmado!,
-                              configName: currentName!.trim(),
-                              total: provider.total,
-                              seleccionados: provider.seleccionados,
-                              esAmd: provider.esAmd,
-                            );
-                          } else {
-                            await storage.saveConfiguration(
-                              uid: uid,
-                              configName: currentName!.trim(),
-                              total: provider.total,
-                              seleccionados: provider.seleccionados,
-                              esAmd: provider.esAmd,
-                            );
-                          }
+                                if (currentName!.trim().isEmpty) return;
+                              }
 
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  isEditing
-                                      ? '✅ Armado actualizado'
-                                      : '✅ Armado guardado',
-                                ),
-                              ),
-                            );
-                            Navigator.pop(context, true);
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('❌ Error: ${e.toString()}'),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      onPressed: () async {
-                        final provider = Provider.of<ComponentsProvider>(
-                          context,
-                          listen: false,
-                        );
+                              try {
+                                final storage = UserConfigurationStorage();
 
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder:
-                              (_) => const AlertDialog(
-                                content: Row(
-                                  children: [
-                                    CircularProgressIndicator(),
-                                    SizedBox(width: 20),
-                                    Expanded(
-                                      child: Text(
-                                        "La IA está armando tu PC...",
+                                if (isEditing) {
+                                  await storage.updateConfiguration(
+                                    uid: uid,
+                                    docId: screen!.idArmado!,
+                                    configName: currentName!.trim(),
+                                    total: provider.total,
+                                    seleccionados: provider.seleccionados,
+                                    esAmd: provider.esAmd,
+                                  );
+                                } else {
+                                  await storage.saveConfiguration(
+                                    uid: uid,
+                                    configName: currentName!.trim(),
+                                    total: provider.total,
+                                    seleccionados: provider.seleccionados,
+                                    esAmd: provider.esAmd,
+                                  );
+                                }
+
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        isEditing
+                                            ? '✅ Armado actualizado'
+                                            : '✅ Armado guardado',
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                  Navigator.pop(context, true);
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('❌ Error: ${e.toString()}'),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
                               ),
-                        );
+                            ),
+                            label: const Text('Generar PC'),
+                            icon: const Icon(Icons.computer),
+                            onPressed: () async {
+                              final provider = Provider.of<ComponentsProvider>(
+                                context,
+                                listen: false,
+                              );
 
-                        print(
-                          "💰 Presupuesto pasado a IA: ${screen!.initialBudget}",
-                        );
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder:
+                                    (_) => const AlertDialog(
+                                      content: Row(
+                                        children: [
+                                          CircularProgressIndicator(),
+                                          SizedBox(width: 20),
+                                          Expanded(
+                                            child: Text(
+                                              "La IA está armando tu PC...",
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                              );
 
-                        final seleccionados = await autoArmadoSugerido(
-                          armado: provider.components,
-                          usarIntel: !provider.esAmd,
-                          budget: screen.initialBudget,
-                        );
-                        if (!context.mounted) return;
-                        Navigator.of(context).pop();
+                              print(
+                                "💰 Presupuesto pasado a IA: ${screen!.initialBudget}",
+                              );
 
-                        provider.setAllSelected(seleccionados);
+                              final seleccionados = await autoArmadoSugerido(
+                                armado: provider.components,
+                                usarIntel: !provider.esAmd,
+                                budget: screen.initialBudget,
+                              );
+                              if (!context.mounted) return;
+                              Navigator.of(context).pop();
 
-                        if (!context.mounted) return;
-                        await showDialog(
-                          context: context,
-                          builder:
-                              (_) => AlertDialog(
-                                title: Text(
-                                  provider.esAmd
-                                      ? "Armado AMD sugerido"
-                                      : "Armado Intel sugerido",
-                                ),
-                                content: Text(
-                                  "La IA ha generado una configuración compatible basada en componentes ${provider.esAmd ? 'AMD' : 'Intel'}. Podés revisarla y ajustarla si lo deseás.",
-                                ),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text("OK"),
-                                  ),
-                                ],
-                              ),
-                        );
-                      },
-                      child: const Text('Generar PC'),
-                    ),
+                              provider.setAllSelected(seleccionados);
+
+                              if (!context.mounted) return;
+                              await showDialog(
+                                context: context,
+                                builder:
+                                    (_) => AlertDialog(
+                                      title: Text(
+                                        provider.esAmd
+                                            ? "Armado AMD sugerido"
+                                            : "Armado Intel sugerido",
+                                      ),
+                                      content: Text(
+                                        "La IA ha generado una configuración compatible basada en componentes ${provider.esAmd ? 'AMD' : 'Intel'}. Podés revisarla y ajustarla si lo deseás.",
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed:
+                                              () => Navigator.pop(context),
+                                          child: const Text("OK"),
+                                        ),
+                                      ],
+                                    ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(2.0),
@@ -730,31 +753,50 @@ class _RouteButtons extends StatelessWidget {
                           ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                  Flex(
+                    direction: Axis.horizontal,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            onPressed:
+                                () => _analizarCompatibilidadConIA(context),
+                            label: const Text('Analizar con IA'),
+                            icon: const Icon(Icons.smart_toy),
+                          ),
                         ),
                       ),
-                      onPressed: () => _analizarCompatibilidadConIA(context),
-                      child: const Text('Analizar con IA'),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              textStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            onPressed: () => context.push('/links'),
+                            label: const Text('Ver Links'),
+                            icon: Icon(Icons.link),
+                          ),
                         ),
                       ),
-                      onPressed: () => context.push('/links'),
-                      child: const Text('Ver Links'),
-                    ),
+                    ],
                   ),
                 ],
               ),
