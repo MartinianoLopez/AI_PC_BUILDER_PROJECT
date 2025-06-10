@@ -20,8 +20,23 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 5, 3, 26),
-      appBar: AppBar(backgroundColor: const Color.fromARGB(255, 5, 3, 26)),
-      drawer: const MainDrawer(),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 5, 3, 26),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                if (!context.mounted) return;
+                context.go('/');
+              } catch (e) {
+                print('Error al cerrar sesion $e');
+              }
+            },
+          ),
+        ],
+      ),
       body: const _MainBody(),
     );
   }
@@ -96,7 +111,10 @@ class MainBodyState extends State<_MainBody> {
 
     //context.push('/components', extra: {'budget': budget});
     print("home $selectedOption");
-    final result = await context.push('/components', extra: {'budget': budget, 'selectedOption': selectedOption});
+    final result = await context.push(
+      '/components',
+      extra: {'budget': budget, 'selectedOption': selectedOption},
+    );
     if (result == true) {
       setState(() => loadingSaved = true);
       _loadSavedConfigurations();
@@ -170,65 +188,86 @@ class MainBodyState extends State<_MainBody> {
                 ),
               ),
               const SizedBox(height: 30),
-             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container( // selector drop down de tipo de computadora
-                  height: 48,
-                  width: 150,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 48, 49, 51),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: const Color.fromARGB(255, 210, 211, 212)),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: selectedOption,
-                      icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                      dropdownColor: const Color.fromARGB(255, 48, 49, 51),
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedOption = newValue!;
-                        });
-                      },
-                      items: options.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                SizedBox(
-                  height: 48,
-                  width: 350,
-                  child: ElevatedButton( // Boton armar pc
-                    onPressed: () {
-                      solicitudDeIngresoAlArmador(inputBudget.text, selectedOption, context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 48, 49, 51),
-                      foregroundColor: Colors.white,
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: const BorderSide(color: Color.fromARGB(255, 210, 211, 212)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    // selector drop down de tipo de computadora
+                    height: 48,
+                    width: 150,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 48, 49, 51),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 210, 211, 212),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
-                    child: const Text('Armar PC'),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedOption,
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
+                        ),
+                        dropdownColor: const Color.fromARGB(255, 48, 49, 51),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedOption = newValue!;
+                          });
+                        },
+                        items:
+                            options.map<DropdownMenuItem<String>>((
+                              String value,
+                            ) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
 
+                  const SizedBox(width: 16),
+
+                  SizedBox(
+                    height: 48,
+                    width: 350,
+                    child: ElevatedButton(
+                      // Boton armar pc
+                      onPressed: () {
+                        solicitudDeIngresoAlArmador(
+                          inputBudget.text,
+                          selectedOption,
+                          context,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 48, 49, 51),
+                        foregroundColor: Colors.white,
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          side: const BorderSide(
+                            color: Color.fromARGB(255, 210, 211, 212),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      child: const Text('Armar PC'),
+                    ),
+                  ),
+                ],
+              ),
 
               const SizedBox(height: 30),
               const Text(

@@ -36,35 +36,35 @@ class MainDrawer extends StatelessWidget {
             title: const Text('Home'),
             onTap: () => context.go('/'),
           ),
-          ListTile(
-            leading: const Icon(Icons.link),
-            title: const Text('Links'),
-            onTap: () => context.go('/links'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.computer),
-            title: const Text('Components'),
-            onTap: () => context.go('/components'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.computer),
-            title: const Text('Testing'),
-            onTap: () => context.go('/testing'),
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.link),
+          //   title: const Text('Links'),
+          //   onTap: () => context.go('/links'),
+          // ),
+          // ListTile(
+          //   leading: const Icon(Icons.computer),
+          //   title: const Text('Components'),
+          //   onTap: () => context.go('/components'),
+          // ),
+          // ListTile(
+          //   leading: const Icon(Icons.computer),
+          //   title: const Text('Testing'),
+          //   onTap: () => context.go('/testing'),
+          // ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout_outlined),
             title: const Text('Cerrar sesión'),
             onTap: () => logOut(),
           ),
-          SwitchListTile(
-            title: const Text("Modo oscuro"),
-            secondary: Icon(
-              themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-            ),
-            value: themeProvider.isDarkMode,
-            onChanged: (_) => themeProvider.toggleTheme(),
-          ),
+          // SwitchListTile(
+          //   title: const Text("Modo oscuro"),
+          //   secondary: Icon(
+          //     themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+          //   ),
+          //   value: themeProvider.isDarkMode,
+          //   onChanged: (_) => themeProvider.toggleTheme(),
+          // ),
         ],
       ),
     );

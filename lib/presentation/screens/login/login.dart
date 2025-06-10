@@ -193,12 +193,12 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _loginConEnv();
-        },
-        child: Text("Testing"),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     _loginConEnv();
+      //   },
+      //   child: Text("Testing"),
+      // ),
     );
   }
 }
