@@ -1,15 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:ai_pc_builder_project/core/providers/theme_provider.dart';
+//import 'package:provider/provider.dart';
+//import 'package:ai_pc_builder_project/core/providers/theme_provider.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    //final themeProvider = Provider.of<ThemeProvider>(context);
     Future<void> logOut() async {
       try {
         await FirebaseAuth.instance.signOut();

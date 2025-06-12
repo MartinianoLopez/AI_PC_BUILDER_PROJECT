@@ -1,10 +1,10 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+//import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.dart';
+//import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ai_pc_builder_project/core/providers/user_configuration_storage.dart';

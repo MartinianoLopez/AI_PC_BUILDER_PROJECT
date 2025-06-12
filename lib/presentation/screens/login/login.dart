@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,8 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _showVerifyButton = false;
 
+  /* para usar en desarrollo
   void _loginConEnv() async {
-    // para hacer pruebas
     final email = dotenv.env['EMAIL'] ?? "";
     final password = dotenv.env['PASSWORD'] ?? "";
 
@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text('Error al iniciar sesión: ${e.message}')),
       );
     }
-  }
+  }*/
 
   void _login() async {
     final email = emailController.text.trim();
