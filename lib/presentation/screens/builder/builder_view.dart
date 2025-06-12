@@ -21,8 +21,8 @@ class ComponenetsView extends StatefulWidget {
   });
 
   final int initialBudget;
-  final String? idArmado; // ID del documento en Firestore (armado)
-  final String? nombreArmado; // nombre actual del armado (si ya existía)
+  final String? idArmado; // ID del Armado abierto
+  final String? nombreArmado; // nombre del Armado abierto
   final List<Component?>? seleccionados;
   final bool esAmd;
   final String? selectedOption;
@@ -431,11 +431,16 @@ class _ComponentSliderState extends State<_ComponentSlider> {
   }
 }
 
-class _RouteButtons extends StatelessWidget {
+class _RouteButtons extends StatefulWidget {
   const _RouteButtons();
 
-  Future<void> _analizarCompatibilidadConIA(BuildContext context) async {
-    final provider = Provider.of<ComponentsProvider>(context, listen: false);
+  @override
+  State<_RouteButtons> createState() => _RouteButtonsState();
+}
+
+class _RouteButtonsState extends State<_RouteButtons> {
+  Future<void> _analizarCompatibilidadConIA(BuildContext context) async {     // al presionar el boton analizar se llama este metodo
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);   
 
     showDialog(
       context: context,
@@ -452,60 +457,20 @@ class _RouteButtons extends StatelessWidget {
           ),
     );
 
-    final result = await checkCompatibilityWithAI(
+    final result = await checkCompatibilityWithAI(                             // crea dos analisis mediante el service
       provider.seleccionados.whereType<Component>().toList(),
+      provider.categoriasPorMarca
     );
-    // 👇 Agregá estos prints acá:
-    print("🧠 Análisis individual crudo:");
-    print(result['individual']);
 
-    print("📚 Categorías locales:");
-    print(provider.categoriasPorMarca);
     if (!context.mounted) return;
     Navigator.of(context).pop();
 
-    // Guardar el análisis en el estado de la pantalla
     final state = context.findAncestorStateOfType<_ComponentsViewState>();
 
     if (state != null) {
-      // TO DO: esto deveria estar en un provider
-      state.setState(() {
+      state.setState(() {                                                      // se cambian los analisis actuales por los nuevos en state del _ComponentsView
         state.analisisGeneral = result['general'] ?? '';
-        // Parseo simple: línea a línea, separando por ':'
-
-        final parsed = <String, String>{};
-        final lineas = (result['individual'] ?? '').split('\n');
-        final categorias = provider.categoriasPorMarca;
-
-        for (final linea in lineas) {
-          final partes = linea.split(':');
-          if (partes.length >= 2) {
-            final clave = partes[0].trim().toLowerCase();
-            final contenido = partes.sublist(1).join(':').trim();
-
-            for (final categoria in categorias) {
-              final catNormalizada = categoria.toLowerCase();
-              if (clave.contains('cpu') &&
-                      catNormalizada.contains('procesador') ||
-                  clave.contains('procesador') &&
-                      catNormalizada.contains('procesador') ||
-                  clave.contains('ram') && catNormalizada.contains('memoria') ||
-                  clave.contains('mother') &&
-                      catNormalizada.contains('mother') ||
-                  clave.contains('ssd') && catNormalizada.contains('ssd') ||
-                  clave.contains('gabinete') &&
-                      catNormalizada.contains('gabinete') ||
-                  clave.contains('fuente') &&
-                      catNormalizada.contains('fuente') ||
-                  clave.contains('placa') && catNormalizada.contains('video') ||
-                  clave.contains('gpu') && catNormalizada.contains('video')) {
-                parsed[categoria] = contenido;
-                break;
-              }
-            }
-          }
-        }
-        state.analisisIndividual = parsed;
+        state.analisisIndividual = result['individual'] ?? '';
       });
     }
   }
