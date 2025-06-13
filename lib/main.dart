@@ -7,6 +7,7 @@ import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/router/app_router.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   await dotenv.load();
@@ -21,14 +22,16 @@ void main() async {
     // ignore: avoid_print
     print('❌ Error al conectar Firebase: $e');
   }
-  try {
-    MobileAds.instance.updateRequestConfiguration(
-      RequestConfiguration(testDeviceIds: ['E5A4324AFBA36220A51FF1C8CC5B0F47']),
-    );
-    MobileAds.instance.initialize();
-    print('✅ AdMob se conectó correctamente');
-  } catch (e) {
-    print("❌ Error al inicializar AdMob (Anuncios): $e");
+  if (kIsWeb == false) {
+    try {
+      MobileAds.instance.updateRequestConfiguration(
+        RequestConfiguration(testDeviceIds: ['E5A4324AFBA36220A51FF1C8CC5B0F47']),
+      );
+      MobileAds.instance.initialize();
+      print('✅ AdMob se conectó correctamente');
+    } catch (e) {
+      print("❌ Error al inicializar AdMob (Anuncios): $e");
+    }
   }
 
   runApp(

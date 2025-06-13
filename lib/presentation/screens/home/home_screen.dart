@@ -30,7 +30,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   void createBanner() {
     if (kIsWeb) return;
-
     _banner = BannerAd(
       size: AdSize.fullBanner,
       adUnitId: AdMobService.bannerAdUnitId!,
@@ -64,19 +63,21 @@ class HomeScreenState extends State<HomeScreen> {
       body: const _MainBody(),
       bottomNavigationBar:
           _banner == null
-              ? Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                height: 52,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 11, 7, 58),
+              ? kIsWeb == true
+                ? null
+                : Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 11, 7, 58),
+                  ),
+                  child: Center(child: const Text('Cargando anuncio...')),
+                )
+                : Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  height: 52,
+                  child: AdWidget(ad: _banner!),
                 ),
-                child: Center(child: const Text('Cargando anuncio...')),
-              )
-              : Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                height: 52,
-                child: AdWidget(ad: _banner!),
-              ),
     );
   }
 }
