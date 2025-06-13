@@ -30,7 +30,7 @@ bool coincide(String a, String b) {
 Future<List<Component?>> autoArmadoSugerido({
   required List<List<Component>> armado,
   required bool usarIntel,
-  required int budget, 
+  required int budget,
   String? selectedOption,
 }) async {
   // Paso 1: Filtrar categorías relevantes
@@ -72,8 +72,8 @@ Future<List<Component?>> autoArmadoSugerido({
       })
       .join("\n\n");
 
-    selectedOption ??= "Uso general";
-    print("tipo:$selectedOption __________________________________");
+  selectedOption ??= "Uso general";
+  print("tipo:$selectedOption __________________________________");
 
   final systemPrompt = """
 Sos un experto en armado de computadoras. Tu objetivo es armar la mejor PC posible con el presupuesto indicado por el usuario.

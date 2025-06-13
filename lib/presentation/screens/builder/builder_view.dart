@@ -255,10 +255,10 @@ class _ComponentSliderState extends State<_ComponentSlider> {
     final nombreCategoria = categorias[widget.posicion];
     final textoAnalisis = state?.analisisIndividual[nombreCategoria] ?? '';
 
-    // 🔍 Filtro para decidir si el mensaje vale la pena mostrarse
+    // 🔍 Filtro para decidir si el mensaje vale la pena mostrarse   // TO DO: esto no puede ir aca, tiene que ir en el check_compatibility_with_ai
     final textoFiltrado = textoAnalisis.toLowerCase();
 
-    final esMensajeGenerico =
+    final esMensajeGenerico =       
         textoFiltrado.startsWith('compatible con el') ||
         textoFiltrado.startsWith('compatible con la') ||
         textoFiltrado.startsWith('es compatible con') ||

@@ -25,7 +25,9 @@ void main() async {
   if (kIsWeb == false) {
     try {
       MobileAds.instance.updateRequestConfiguration(
-        RequestConfiguration(testDeviceIds: ['E5A4324AFBA36220A51FF1C8CC5B0F47']),
+        RequestConfiguration(
+          testDeviceIds: ['E5A4324AFBA36220A51FF1C8CC5B0F47'],
+        ),
       );
       MobileAds.instance.initialize();
       print('✅ AdMob se conectó correctamente');

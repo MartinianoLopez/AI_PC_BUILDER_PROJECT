@@ -3,15 +3,14 @@ import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:ai_pc_builder_project/core/services/ad_mob_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-//import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ai_pc_builder_project/core/providers/user_configuration_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -43,41 +42,72 @@ class HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 5, 3, 26),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 5, 3, 26),
-        scrolledUnderElevation: 0.0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              try {
-                await FirebaseAuth.instance.signOut();
-                if (!context.mounted) return;
-                context.go('/');
-              } catch (e) {
-                print('Error al cerrar sesion $e');
-              }
-            },
-          ),
-        ],
+  backgroundColor: const Color.fromARGB(255, 5, 3, 26),
+  scrolledUnderElevation: 0.0,
+  leadingWidth: 200,
+  leading: Row(
+    children: [
+      const SizedBox(width: 12),
+      TextButton.icon(
+        icon: const Icon(Icons.logout, color: Colors.white),
+        label: const Text(
+        "Cerrar sesión",
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
+        onPressed: () async {
+          try {
+            await FirebaseAuth.instance.signOut();
+            if (!context.mounted) return;
+            context.go('/');
+          } catch (e) {
+            print('Error al cerrar sesión $e');
+          }
+        },
+      ),
+    ],
+  ),
+
+  actions: [
+    TextButton.icon(
+      onPressed: () async {
+        const url = 'https://ai-pc-builder-soporte-tecnico-yeb1.vercel.app/';
+        if (await canLaunchUrl(Uri.parse(url))) {
+          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        } else {
+          print('No se pudo abrir $url');
+        }
+      },
+      icon: const Icon(Icons.contact_mail, color: Colors.white),
+      label: const Text(
+        "Contáctanos",
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+    ),
+    const SizedBox(width: 12),
+  ],
+),
+
       body: const _MainBody(),
       bottomNavigationBar:
           _banner == null
               ? kIsWeb == true
-                ? null
-                : Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 11, 7, 58),
-                  ),
-                  child: Center(child: const Text('Cargando anuncio...')),
-                )
-                : Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  height: 52,
-                  child: AdWidget(ad: _banner!),
-                ),
+                  ? null
+                  : Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 11, 7, 58),
+                    ),
+                    child: Center(child: const Text('Cargando anuncio...')),
+                  )
+              : Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                height: 52,
+                child: AdWidget(ad: _banner!),
+              ),
     );
   }
 }
@@ -95,7 +125,6 @@ class MainBodyState extends State<_MainBody> {
   TextEditingController inputBudget = TextEditingController();
   String selectedOption = 'Gamer';
 
-  // Lista de opciones
   final List<String> options = ['Gamer', 'Oficina', 'Educación', 'Edición'];
 
   void _loadSavedConfigurations() async {
@@ -148,8 +177,6 @@ class MainBodyState extends State<_MainBody> {
       );
       return;
     }
-
-    //context.push('/components', extra: {'budget': budget});
     print("home $selectedOption");
     final result = await context.push(
       '/components',
@@ -210,19 +237,23 @@ class MainBodyState extends State<_MainBody> {
               height: 300,
               fit: BoxFit.fitHeight,
             ),
-            const Text('Ingresar presupuesto:'),
-            const SizedBox(height: 15),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 100),
+              padding: EdgeInsets.symmetric(horizontal: 100),
               child: TextField(
                 controller: inputBudget,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                inputFormatters: [
+                  CurrencyInputFormatter(
+                    leadingSymbol: '\$',
+                    thousandSeparator: ThousandSeparator.Period,
+                    mantissaLength: 0, 
+                    useSymbolPadding: true,
+                  ),
+                ],
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: "\$650.000",
-                  labelText: '',
+                  labelText: 'Ingresa tu presupuesto',
                 ),
               ),
             ),
@@ -230,8 +261,8 @@ class MainBodyState extends State<_MainBody> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  // selector drop down de tipo de computadora
+                // --------------------------selector tipos de computadora--------------------------
+                Container(                
                   height: 48,
                   width: 140,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -268,15 +299,14 @@ class MainBodyState extends State<_MainBody> {
                 ),
 
                 const SizedBox(width: 16),
-
+                //-----------------------------Boton armar pc-----------------------------
                 SizedBox(
                   height: 48,
                   width: 240,
-                  child: ElevatedButton(
-                    // Boton armar pc
+                  child: ElevatedButton(                 
                     onPressed: () {
                       solicitudDeIngresoAlArmador(
-                        inputBudget.text,
+                        inputBudget.text.replaceAll(RegExp(r'[^\d]'), ''),
                         selectedOption,
                         context,
                       );
@@ -302,7 +332,7 @@ class MainBodyState extends State<_MainBody> {
                 ),
               ],
             ),
-
+            //----------------------------- Armados Guardados-----------------------------
             const SizedBox(height: 30),
             const Text(
               'Tus Armados Guardados:',
@@ -322,14 +352,14 @@ class MainBodyState extends State<_MainBody> {
                   ),
                   SizedBox(width: 10),
                   Text(
-                    "Importando enlaces de tus armados guardados...",
+                    "cargando guardados...",
                     style: TextStyle(color: Colors.white),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
             ],
-
+             //----------------------------- Guardados-----------------------------
             Expanded(
               child: Scrollbar(
                 child: ListView.builder(
@@ -341,7 +371,7 @@ class MainBodyState extends State<_MainBody> {
                     final total = config['total'] ?? 0 as double;
                     final docId = config['id'];
 
-                    return Card(
+                    return Card(      // TO DO: Modularizar el card
                       margin: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
@@ -522,7 +552,7 @@ class MainBodyState extends State<_MainBody> {
     );
   }
 
-  String _getPlatformPrefix(List componentes) {
+  String _getPlatformPrefix(List componentes) {       // TO DO: esto no puede estar aca
     for (final c in componentes) {
       final titulo = (c['titulo'] ?? '').toString().toLowerCase();
       if (titulo.contains('amd') ||

@@ -112,7 +112,7 @@ class ComponentList extends StatelessWidget {
 
                 // Cambio con el provider
                 provider.setSelected(index, component);
-                
+
                 // Vuelvo al armador
                 context.pop();
               },

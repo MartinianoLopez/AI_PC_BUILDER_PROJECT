@@ -52,7 +52,7 @@ $componentsDescription
     individualRaw = 'Todos los componentes parecen correctos.';
     general = '✅ No se detectaron problemas en el armado.';
   } else {
-    final bloques = respuesta.split(RegExp(r'\[.*\]'));
+    final bloques = respuesta.split(RegExp(r'\[.*\]')); 
     final etiquetas = RegExp(r'\[.*\]').allMatches(respuesta).toList();
 
     for (var i = 0; i < etiquetas.length; i++) {
@@ -75,14 +75,18 @@ $componentsDescription
 
         for (final categoria in categorias) {
           final catNormalizada = categoria.toLowerCase();
-          if ((clave.contains('cpu') && catNormalizada.contains('procesador')) ||
-              (clave.contains('procesador') && catNormalizada.contains('procesador')) ||
+          if ((clave.contains('cpu') &&
+                  catNormalizada.contains('procesador')) ||
+              (clave.contains('procesador') &&
+                  catNormalizada.contains('procesador')) ||
               (clave.contains('ram') && catNormalizada.contains('memoria')) ||
               (clave.contains('mother') && catNormalizada.contains('mother')) ||
               (clave.contains('ssd') && catNormalizada.contains('ssd')) ||
-              (clave.contains('gabinete') && catNormalizada.contains('gabinete')) ||
+              (clave.contains('gabinete') &&
+                  catNormalizada.contains('gabinete')) ||
               (clave.contains('fuente') && catNormalizada.contains('fuente')) ||
-              ((clave.contains('placa') || clave.contains('gpu')) && catNormalizada.contains('video'))) {
+              ((clave.contains('placa') || clave.contains('gpu')) &&
+                  catNormalizada.contains('video'))) {
             individualParsed[categoria] = contenido;
             break;
           }
@@ -91,8 +95,5 @@ $componentsDescription
     }
   }
 
-  return {
-    'general': general,
-    'individual': individualParsed,
-  };
+  return {'general': general, 'individual': individualParsed};
 }
