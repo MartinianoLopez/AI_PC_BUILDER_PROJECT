@@ -1,9 +1,12 @@
 import 'package:ai_pc_builder_project/core/classes/component.dart';
 import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
+import 'package:ai_pc_builder_project/core/services/ad_mob_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 //import 'package:ai_pc_builder_project/presentation/screens/common/menu_lateral.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,6 +20,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  BannerAd? _banner;
+
+  @override
+  initState() {
+    super.initState();
+    createBanner();
+  }
+
+  void createBanner() {
+    if (kIsWeb) return;
+
+    _banner = BannerAd(
+      size: AdSize.fullBanner,
+      adUnitId: AdMobService.bannerAdUnitId!,
+      listener: AdMobService.bannerListener,
+      request: const AdRequest(),
+    )..load();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +62,21 @@ class HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: const _MainBody(),
+      bottomNavigationBar:
+          _banner == null
+              ? Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                height: 52,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 11, 7, 58),
+                ),
+                child: Center(child: const Text('Cargando anuncio...')),
+              )
+              : Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                height: 52,
+                child: AdWidget(ad: _banner!),
+              ),
     );
   }
 }

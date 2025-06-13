@@ -2,6 +2,7 @@ import 'package:ai_pc_builder_project/core/providers/components_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'core/providers/theme_provider.dart';
@@ -19,6 +20,15 @@ void main() async {
   } catch (e) {
     // ignore: avoid_print
     print('❌ Error al conectar Firebase: $e');
+  }
+  try {
+    MobileAds.instance.updateRequestConfiguration(
+      RequestConfiguration(testDeviceIds: ['E5A4324AFBA36220A51FF1C8CC5B0F47']),
+    );
+    MobileAds.instance.initialize();
+    print('✅ AdMob se conectó correctamente');
+  } catch (e) {
+    print("❌ Error al inicializar AdMob (Anuncios): $e");
   }
 
   runApp(
