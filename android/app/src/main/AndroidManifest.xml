@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="ai_pc_builder_project"
+        android:label="AI PC Builder"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

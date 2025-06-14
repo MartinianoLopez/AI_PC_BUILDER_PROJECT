@@ -1,11 +1,11 @@
 {
-    "name": "ai_pc_builder_project",
-    "short_name": "ai_pc_builder_project",
+    "name": "AI PC Builder",
+    "short_name": "AI PC Builder",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "PC builder with AI",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
