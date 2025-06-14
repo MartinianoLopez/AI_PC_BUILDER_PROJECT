@@ -371,7 +371,7 @@ class MainBodyState extends State<_MainBody> {
                     final total = config['total'] ?? 0 as double;
                     final docId = config['id'];
 
-                    return Card(      // TO DO: Modularizar el card
+                    return Card(  
                       margin: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
@@ -379,7 +379,7 @@ class MainBodyState extends State<_MainBody> {
                       child: ListTile(
                         leading: const Icon(Icons.computer),
                         title: Text(
-                          '${_getPlatformPrefix(config['componentes'])} - $name',
+                          '${(config['esAmd'])?"AMD": "Intel"} - $name',
                         ),
                         subtitle: Text(
                           'Total: \$${NumberFormat("#,##0", "es_AR").format(total)}',
@@ -550,22 +550,5 @@ class MainBodyState extends State<_MainBody> {
         ),
       ),
     );
-  }
-
-  String _getPlatformPrefix(List componentes) {       // TO DO: esto no puede estar aca
-    for (final c in componentes) {
-      final titulo = (c['titulo'] ?? '').toString().toLowerCase();
-      if (titulo.contains('amd') ||
-          titulo.contains('am4') ||
-          titulo.contains('am5')) {
-        return 'AMD';
-      }
-      if (titulo.contains('intel') ||
-          titulo.contains('1200') ||
-          titulo.contains('1700')) {
-        return 'Intel';
-      }
-    }
-    return 'Genérico';
   }
 }
