@@ -1,5 +1,4 @@
 import 'package:ai_pc_builder_project/presentation/screens/search_component/search_component.dart';
-import 'package:ai_pc_builder_project/presentation/screens/testing/ai_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ai_pc_builder_project/presentation/screens/start/start.dart';
 import 'package:ai_pc_builder_project/presentation/screens/registration/registration.dart';
@@ -49,11 +48,6 @@ final GoRouter appRouter = GoRouter(
         final category = categoryStr ?? 'null';
         return SearchComponentScreen(category: category);
       },
-    ),
-
-    GoRoute(
-      path: '/testing',
-      builder: (context, state) => const TestingSCreen(),
     ),
   ],
 );
