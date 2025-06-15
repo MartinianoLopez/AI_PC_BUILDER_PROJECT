@@ -91,7 +91,63 @@ $componentsDescription
             break;
           }
         }
+        
+        const frasesDeseables = [
+          'no es compatible con',
+          'no funciona con',
+          'incompatible',
+          'no se recomienda',
+          'no se puede usar con',
+          'podría causar problemas',
+          'no encaja en',
+          'requiere adaptador',
+          'puede generar errores',
+          'puede tener conflictos',
+          'no es ideal para',
+          'presenta limitaciones con',
+          'solo funciona con ciertas',
+          'puede no ser detectado',
+        ];
+
+
+        const frasesIndeseables = [
+          'compatible con el',
+          'compatible con la',
+          'es compatible con',
+          'funciona perfectamente',
+          'funciona sin problemas',
+          'funciona bien con',
+          'totalmente compatible',
+          'compatible con todos',
+          'es ideal para',
+          'recomendado para',
+          'se adapta perfectamente',
+          'no presenta problemas',
+          'no hay conflictos',
+          'compatibles entre sí',
+          'compatible con el sistema',
+          'es adecuado para',
+        ];
+
+
+        for (final categoria in categorias) {
+          final texto = individualParsed[categoria]?.toLowerCase();
+          if (texto == null) break;
+
+          final contieneDeseable = frasesDeseables.any(texto.contains);
+          final contieneIndeseable = frasesIndeseables.any((frase) =>
+            texto.startsWith(frase) || texto.contains(frase)
+          );
+
+          final esUtil = contieneDeseable || !contieneIndeseable;
+
+          if (!esUtil) {
+            individualParsed[categoria] = '';
+          }
+        }
+        
       }
+      
     }
   }
 

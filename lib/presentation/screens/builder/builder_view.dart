@@ -250,28 +250,8 @@ class _ComponentSliderState extends State<_ComponentSlider> {
     final provider = Provider.of<ComponentsProvider>(context, listen: true);
     final categorias = provider.categoriasPorMarca;
 
-    // Obtenemos el análisis individual según la categoría
     final state = context.findAncestorStateOfType<_ComponentsViewState>();
-    final nombreCategoria = categorias[widget.posicion];
-    final textoAnalisis = state?.analisisIndividual[nombreCategoria] ?? '';
-
-    // 🔍 Filtro para decidir si el mensaje vale la pena mostrarse   // TO DO: esto no puede ir aca, tiene que ir en el check_compatibility_with_ai
-    final textoFiltrado = textoAnalisis.toLowerCase();
-
-    final esMensajeGenerico =       
-        textoFiltrado.startsWith('compatible con el') ||
-        textoFiltrado.startsWith('compatible con la') ||
-        textoFiltrado.startsWith('es compatible con') ||
-        textoFiltrado.startsWith('compatible con todos') ||
-        textoFiltrado.contains('compatible con el sistema') ||
-        textoFiltrado.contains('compatibles entre sí');
-
-    final esMensajeUtil =
-        textoFiltrado.contains('no es compatible con') ||
-        textoFiltrado.contains('pero') ||
-        textoFiltrado.contains('mejor') ||
-        textoFiltrado.contains('podría') ||
-        !esMensajeGenerico;
+    final textoAdvertenciaComponente = state?.analisisIndividual[categorias[widget.posicion]] ?? '';
 
     return Consumer<ComponentsProvider>(
       builder: (context, provider, _) {
@@ -333,11 +313,10 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                                 );
                               },
                             ),
-                            if (esMensajeUtil)
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  textoAnalisis,
+                                  textoAdvertenciaComponente,
                                   style: const TextStyle(
                                     fontSize: 13,
                                     color: Colors.amber,
