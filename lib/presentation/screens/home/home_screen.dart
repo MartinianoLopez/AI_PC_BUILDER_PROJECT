@@ -226,17 +226,19 @@ class MainBodyState extends State<_MainBody> {
   @override
   Widget build(BuildContext context) {
     final componentsProvider = Provider.of<ComponentsProvider>(context);
-
+    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return Center(
       child: SizedBox(
         width: 700,
         child: Column(
           children: [
-            Image.asset(
-              'assets/images/Logo.png',
-              height: 300,
-              fit: BoxFit.fitHeight,
-            ),
+            !isKeyboardOpen
+            ? Image.asset(
+                'assets/images/Logo.png',
+                height: 300,
+                fit: BoxFit.fitHeight,
+              )
+            : const SizedBox(height: 30),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 100),
               child: TextField(
@@ -258,79 +260,84 @@ class MainBodyState extends State<_MainBody> {
               ),
             ),
             const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // --------------------------selector tipos de computadora--------------------------
-                Container(                
-                  height: 48,
-                  width: 140,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 48, 49, 51),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: const Color.fromARGB(255, 210, 211, 212),
-                    ),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: selectedOption,
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.white,
+            // -------------------------------botones de armado-----------------------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10), 
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      height: 48,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 48, 49, 51),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 210, 211, 212),
+                        ),
                       ),
-                      dropdownColor: const Color.fromARGB(255, 48, 49, 51),
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedOption = newValue!;
-                        });
-                      },
-                      items:
-                          options.map<DropdownMenuItem<String>>((String value) {
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: selectedOption,
+                          icon: const Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white,
+                          ),
+                          dropdownColor: const Color.fromARGB(255, 48, 49, 51),
+                          style: const TextStyle(color: Colors.white, fontSize: 16),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedOption = newValue!;
+                            });
+                          },
+                          items: options.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
                             );
                           }).toList(),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-                //-----------------------------Boton armar pc-----------------------------
-                SizedBox(
-                  height: 48,
-                  width: 240,
-                  child: ElevatedButton(                 
-                    onPressed: () {
-                      solicitudDeIngresoAlArmador(
-                        inputBudget.text.replaceAll(RegExp(r'[^\d]'), ''),
-                        selectedOption,
-                        context,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 48, 49, 51),
-                      foregroundColor: Colors.white,
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: const BorderSide(
-                          color: Color.fromARGB(255, 210, 211, 212),
                         ),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 6,
+                    child: SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          solicitudDeIngresoAlArmador(
+                            inputBudget.text.replaceAll(RegExp(r'[^\d]'), ''),
+                            selectedOption,
+                            context,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 48, 49, 51),
+                          foregroundColor: Colors.white,
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            side: const BorderSide(
+                              color: Color.fromARGB(255, 210, 211, 212),
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        child: const Text('Armar PC'),
                       ),
                     ),
-                    child: const Text('Armar PC'),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             //----------------------------- Armados Guardados-----------------------------
             const SizedBox(height: 30),

@@ -99,7 +99,7 @@ class ComponentsProvider with ChangeNotifier {
     }
     isLoading = false;
     notifyListeners();
-    print("🧠 Importación de componentes llamada desde Home.");
+    print("✅ Importación de componentes llamada desde Home.");
   }
 
   void setSelected(int index, Component component) {
@@ -127,7 +127,7 @@ class ComponentsProvider with ChangeNotifier {
     List<Component?> newSeleccionados, {
     BuildContext? context,
   }) {
-    print("📦 Largo nuevo: ${newSeleccionados.length}");
+    print(" Largo nuevo: ${newSeleccionados.length}");
     print("📦 Largo actual: ${seleccionados.length}");
 
     if (newSeleccionados.length != seleccionados.length) {
