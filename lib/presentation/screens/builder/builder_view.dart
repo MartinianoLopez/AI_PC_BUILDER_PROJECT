@@ -329,75 +329,81 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                       ),
                       const SizedBox(width: 12),
                       GestureDetector(
-                        onLongPress: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  title: Text(component.name),
-                                  content: Text(
-                                    "\$ ${component.price.toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
-                                ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            if (component.image == 'none')
-                              const Icon(Icons.block, size: 70)
-                            else if (component.image.trim().isNotEmpty)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  component.image,
-                                  width: 70,
-                                  height: 70,
-                                  cacheWidth: 140,
-                                  cacheHeight: 140,
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high,
-                                  errorBuilder:
-                                      (_, __, ___) => const Icon(
-                                        Icons.broken_image,
-                                        size: 70,
-                                      ),
-                                  loadingBuilder: (context, child, progress) {
-                                    if (progress == null) return child;
-                                    return const SizedBox(
-                                      width: 70,
-                                      height: 70,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            else
-                              const Icon(Icons.image_not_supported, size: 70),
-                            const SizedBox(height: 4),
-                            Text(
-                              formattedPrice,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+  onLongPress: () {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(component.name),
+        content: Text(
+          "\$ ${component.price.toStringAsFixed(2)}",
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  },
+  child: Column(
+    children: [
+      Container(
+        width: 80,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1F1F1F),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(2, 2),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(8.0),
+        child: component.image == 'none'
+            ? const Icon(Icons.block, size: 70)
+            : component.image.trim().isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      component.image,
+                      width: 70,
+                      height: 70,
+                      cacheWidth: 140,
+                      cacheHeight: 140,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.high,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.broken_image, size: 70),
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return const SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: Center(
+                              child: CircularProgressIndicator(strokeWidth: 2)),
+                        );
+                      },
+                    ),
+                  )
+                : const Icon(Icons.image_not_supported, size: 70),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        formattedPrice,
+        style: const TextStyle(
+          color: Colors.white70,
+          fontSize: 12,
+        ),
+      ),
+    ],
+  ),
+),
+
                     ],
                   ),
                 ],
