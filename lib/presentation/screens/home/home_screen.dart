@@ -43,53 +43,63 @@ class HomeScreenState extends State<HomeScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: const Color.fromARGB(255, 5, 3, 26),
       appBar: AppBar(
-  backgroundColor: const Color.fromARGB(255, 5, 3, 26),
-  scrolledUnderElevation: 0.0,
-  leadingWidth: 200,
-  leading: Row(
-    children: [
-      const SizedBox(width: 12),
-      TextButton.icon(
-        icon: const Icon(Icons.logout, color: Colors.white),
-        label: const Text(
-        "Cerrar sesión",
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
-        onPressed: () async {
-          try {
-            await FirebaseAuth.instance.signOut();
-            if (!context.mounted) return;
-            context.go('/');
-          } catch (e) {
-            print('Error al cerrar sesión $e');
-          }
-        },
-      ),
-    ],
-  ),
+        backgroundColor: const Color.fromARGB(255, 5, 3, 26),
+        scrolledUnderElevation: 0.0,
+        leadingWidth: 200,
+        leading: Row(
+          children: [
+            const SizedBox(width: 12),
+            TextButton.icon(
+              icon: const Icon(Icons.logout, color: Colors.white),
+              label: const Text(
+                "Cerrar sesión",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  if (!context.mounted) return;
+                  context.go('/');
+                } catch (e) {
+                  print('Error al cerrar sesión $e');
+                }
+              },
+            ),
+          ],
+        ),
 
-  actions: [
-    TextButton.icon(
-      onPressed: () async {
-        const url = 'https://ai-pc-builder-soporte-tecnico-yeb1.vercel.app/';
-        if (await canLaunchUrl(Uri.parse(url))) {
-          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-        } else {
-          print('No se pudo abrir $url');
-        }
-      },
-      icon: const Icon(Icons.contact_mail, color: Colors.white),
-      label: const Text(
-        "Contáctanos",
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        actions: [
+          TextButton.icon(
+            onPressed: () async {
+              const url =
+                  'https://ai-pc-builder-soporte-tecnico-yeb1.vercel.app/';
+              if (await canLaunchUrl(Uri.parse(url))) {
+                await launchUrl(
+                  Uri.parse(url),
+                  mode: LaunchMode.externalApplication,
+                );
+              } else {
+                print('No se pudo abrir $url');
+              }
+            },
+            icon: const Icon(Icons.contact_mail, color: Colors.white),
+            label: const Text(
+              "Contáctanos",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
       ),
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
-    ),
-    const SizedBox(width: 12),
-  ],
-),
 
       body: const _MainBody(),
       bottomNavigationBar:
@@ -234,12 +244,12 @@ class MainBodyState extends State<_MainBody> {
         child: Column(
           children: [
             !isKeyboardOpen
-            ? Image.asset(
-                'assets/images/Logo.png',
-                height: 300,
-                fit: BoxFit.fitHeight,
-              )
-            : const SizedBox(height: 30),
+                ? Image.asset(
+                  'assets/images/Logo.png',
+                  height: 300,
+                  fit: BoxFit.fitHeight,
+                )
+                : const SizedBox(height: 30),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 100),
               child: TextField(
@@ -250,7 +260,7 @@ class MainBodyState extends State<_MainBody> {
                   CurrencyInputFormatter(
                     leadingSymbol: '\$',
                     thousandSeparator: ThousandSeparator.Period,
-                    mantissaLength: 0, 
+                    mantissaLength: 0,
                     useSymbolPadding: true,
                   ),
                 ],
@@ -263,11 +273,10 @@ class MainBodyState extends State<_MainBody> {
             const SizedBox(height: 30),
             // -------------------------------botones de armado-----------------------------------
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10), 
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  
                   Expanded(
                     flex: 4,
                     child: Container(
@@ -288,18 +297,24 @@ class MainBodyState extends State<_MainBody> {
                             color: Colors.white,
                           ),
                           dropdownColor: const Color.fromARGB(255, 48, 49, 51),
-                          style: const TextStyle(color: Colors.white, fontSize: 16),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
                           onChanged: (String? newValue) {
                             setState(() {
                               selectedOption = newValue!;
                             });
                           },
-                          items: options.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                          items:
+                              options.map<DropdownMenuItem<String>>((
+                                String value,
+                              ) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
                         ),
                       ),
                     ),
@@ -318,7 +333,12 @@ class MainBodyState extends State<_MainBody> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 48, 49, 51),
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            48,
+                            49,
+                            51,
+                          ),
                           foregroundColor: Colors.white,
                           elevation: 4,
                           shape: RoundedRectangleBorder(
@@ -367,7 +387,7 @@ class MainBodyState extends State<_MainBody> {
               ),
               const SizedBox(height: 10),
             ],
-             //----------------------------- Guardados-----------------------------
+            //----------------------------- Guardados-----------------------------
             Expanded(
               child: Scrollbar(
                 child: ListView.builder(
@@ -379,7 +399,7 @@ class MainBodyState extends State<_MainBody> {
                     final total = config['total'] ?? 0 as double;
                     final docId = config['id'];
 
-                    return Card(  
+                    return Card(
                       margin: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
@@ -387,7 +407,7 @@ class MainBodyState extends State<_MainBody> {
                       child: ListTile(
                         leading: const Icon(Icons.computer),
                         title: Text(
-                          '${(config['esAmd'])?"AMD": "Intel"} - $name',
+                          '${(config['esAmd']) ? "AMD" : "Intel"} - $name',
                         ),
                         subtitle: Text(
                           'Total: \$${NumberFormat("#,##0", "es_AR").format(total)}',
