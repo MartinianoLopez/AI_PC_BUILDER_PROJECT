@@ -118,11 +118,10 @@ class _Card extends StatelessWidget {
                     )
                   else
                     const Icon(Icons.image_not_supported, size: 70),
-                  Column(
-                    children: [
-                      SizedBox(
-                        width: 270,
-                        child: Text(
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
                           component.name,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -131,17 +130,14 @@ class _Card extends StatelessWidget {
                             color: Colors.black,
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 220,
-                        child: const Text(
+                        const Text(
                           "Hace click para ir a la web del componente",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 8),
                 ],
