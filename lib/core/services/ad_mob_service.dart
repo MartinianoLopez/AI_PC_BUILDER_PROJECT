@@ -6,7 +6,7 @@ class AdMobService {
   static String? get bannerAdUnitId {
     if (Platform.isAndroid) {
       // Cambiar en Produccion a: ca-app-pub-3600502933754206/4672211864
-      return 'ca-app-pub-3600502933754206~8107758521';
+      return 'ca-app-pub-3940256099942544/9214589741';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3600502933754206~2503830635';
     }
