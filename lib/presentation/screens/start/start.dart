@@ -44,7 +44,6 @@ class StartScreen extends StatelessWidget {
             Image.asset('assets/images/Logo.png', height: 150),
             const SizedBox(height: 50),
 
-            // Botón Registrarse
             ElevatedButton(
               onPressed: () => context.go('/registration'),
               style: ElevatedButton.styleFrom(
@@ -63,7 +62,6 @@ class StartScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // Botón Iniciar sesión
             ElevatedButton(
               onPressed: () => context.go('/login'),
               style: ElevatedButton.styleFrom(
@@ -82,7 +80,6 @@ class StartScreen extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // Botón Acceder con Google (estilo unificado)
             ElevatedButton(
               onPressed: () => _signInWithGoogle(context),
               style: ElevatedButton.styleFrom(

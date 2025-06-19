@@ -14,7 +14,6 @@ final categorias = [
   'fuente',
 ];
 
-/// 🔄 Descarga componentes desde Firebase y los organiza por categoría
 Future<Map<String, List<Component>>> fetchComponentsFromFirestore() async {
   final Map<String, List<Component>> resultado = {};
 

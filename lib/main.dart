@@ -16,10 +16,8 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    // ignore: avoid_print
     print('✅ Firebase se conectó correctamente');
   } catch (e) {
-    // ignore: avoid_print
     print('❌ Error al conectar Firebase: $e');
   }
   if (kIsWeb == false) {

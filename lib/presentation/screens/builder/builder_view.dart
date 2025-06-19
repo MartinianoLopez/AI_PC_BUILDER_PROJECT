@@ -21,8 +21,8 @@ class ComponenetsView extends StatefulWidget {
   });
 
   final int initialBudget;
-  final String? idArmado; // ID del Armado abierto
-  final String? nombreArmado; // nombre del Armado abierto
+  final String? idArmado;
+  final String? nombreArmado;
   final List<Component?>? seleccionados;
   final bool esAmd;
   final String? selectedOption;
@@ -53,19 +53,18 @@ class _ComponentsViewState extends State<ComponenetsView> {
       if (widget.seleccionados != null && widget.seleccionados!.isNotEmpty) {
         provider.setAllSelected(widget.seleccionados!);
       } else {
-
         provider.setAllSelected(
           List.filled(provider.getComponents().length, null),
         );
       }
-      if(widget.selectedOption != null){
-      final seleccionados = await autoArmadoSugerido(
-                          armado: provider.components,
-                          usarIntel: !provider.esAmd,
-                          budget: widget.initialBudget,
-                          selectedOption: widget.selectedOption,
-                        );
-      provider.setAllSelected(seleccionados);
+      if (widget.selectedOption != null) {
+        final seleccionados = await autoArmadoSugerido(
+          armado: provider.components,
+          usarIntel: !provider.esAmd,
+          budget: widget.initialBudget,
+          selectedOption: widget.selectedOption,
+        );
+        provider.setAllSelected(seleccionados);
       }
     });
   }
@@ -80,7 +79,6 @@ class _ComponentsViewState extends State<ComponenetsView> {
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          // Resetear sliders al salir
           provider.setAllSelected(
             List.filled(provider.getComponents().length, null),
           );
@@ -92,7 +90,6 @@ class _ComponentsViewState extends State<ComponenetsView> {
           elevation: 0,
           title: Row(
             children: [
-              // Presupuesto
               const Spacer(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -243,7 +240,8 @@ class _ComponentSliderState extends State<_ComponentSlider> {
     final categorias = provider.categoriasPorMarca;
 
     final state = context.findAncestorStateOfType<_ComponentsViewState>();
-    final textoAdvertenciaComponente = state?.analisisIndividual[categorias[widget.posicion]] ?? '';
+    final textoAdvertenciaComponente =
+        state?.analisisIndividual[categorias[widget.posicion]] ?? '';
 
     return Consumer<ComponentsProvider>(
       builder: (context, provider, _) {
@@ -305,97 +303,118 @@ class _ComponentSliderState extends State<_ComponentSlider> {
                                 );
                               },
                             ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(
-                                  textoAdvertenciaComponente,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.amber,
-                                    fontStyle: FontStyle.italic,
-                                  ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                textoAdvertenciaComponente,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.amber,
+                                  fontStyle: FontStyle.italic,
                                 ),
                               ),
+                            ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 12),
                       GestureDetector(
-  onLongPress: () {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(component.name),
-        content: Text(
-          "\$ ${component.price.toStringAsFixed(2)}",
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
-  },
-  child: Column(
-    children: [
-      Container(
-        width: 80,
-        decoration: BoxDecoration(
-          color: const Color(0xFF1F1F1F),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 4,
-              offset: const Offset(2, 2),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(8.0),
-        child: component.image == 'none'
-            ? const Icon(Icons.block, size: 70)
-            : component.image.trim().isNotEmpty
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      component.image,
-                      width: 70,
-                      height: 70,
-                      cacheWidth: 140,
-                      cacheHeight: 140,
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.high,
-                      errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.broken_image, size: 70),
-                      loadingBuilder: (context, child, progress) {
-                        if (progress == null) return child;
-                        return const SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: Center(
-                              child: CircularProgressIndicator(strokeWidth: 2)),
-                        );
-                      },
-                    ),
-                  )
-                : const Icon(Icons.image_not_supported, size: 70),
-      ),
-      const SizedBox(height: 6),
-      Text(
-        formattedPrice,
-        style: const TextStyle(
-          color: Colors.white70,
-          fontSize: 12,
-        ),
-      ),
-    ],
-  ),
-),
-
+                        onLongPress: () {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: Text(component.name),
+                                  content: Text(
+                                    "\$ ${component.price.toStringAsFixed(2)}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1F1F1F),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(2, 2),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(8.0),
+                              child:
+                                  component.image == 'none'
+                                      ? const Icon(Icons.block, size: 70)
+                                      : component.image.trim().isNotEmpty
+                                      ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                          component.image,
+                                          width: 70,
+                                          height: 70,
+                                          cacheWidth: 140,
+                                          cacheHeight: 140,
+                                          fit: BoxFit.cover,
+                                          filterQuality: FilterQuality.high,
+                                          errorBuilder:
+                                              (_, __, ___) => const Icon(
+                                                Icons.broken_image,
+                                                size: 70,
+                                              ),
+                                          loadingBuilder: (
+                                            context,
+                                            child,
+                                            progress,
+                                          ) {
+                                            if (progress == null) return child;
+                                            return const SizedBox(
+                                              width: 70,
+                                              height: 70,
+                                              child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      )
+                                      : const Icon(
+                                        Icons.image_not_supported,
+                                        size: 70,
+                                      ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              formattedPrice,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -416,8 +435,8 @@ class _RouteButtons extends StatefulWidget {
 }
 
 class _RouteButtonsState extends State<_RouteButtons> {
-  Future<void> _analizarCompatibilidadConIA(BuildContext context) async {     // al presionar el boton analizar se llama este metodo
-    final provider = Provider.of<ComponentsProvider>(context, listen: false);   
+  Future<void> _analizarCompatibilidadConIA(BuildContext context) async {
+    final provider = Provider.of<ComponentsProvider>(context, listen: false);
 
     showDialog(
       context: context,
@@ -434,9 +453,9 @@ class _RouteButtonsState extends State<_RouteButtons> {
           ),
     );
 
-    final result = await checkCompatibilityWithAI(                             // crea dos analisis mediante el service
+    final result = await checkCompatibilityWithAI(
       provider.seleccionados.whereType<Component>().toList(),
-      provider.categoriasPorMarca
+      provider.categoriasPorMarca,
     );
 
     if (!context.mounted) return;
@@ -445,7 +464,7 @@ class _RouteButtonsState extends State<_RouteButtons> {
     final state = context.findAncestorStateOfType<_ComponentsViewState>();
 
     if (state != null) {
-      state.setState(() {                                                      // se cambian los analisis actuales por los nuevos en state del _ComponentsView
+      state.setState(() {
         state.analisisGeneral = result['general'] ?? '';
         state.analisisIndividual = result['individual'] ?? '';
       });

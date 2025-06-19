@@ -16,13 +16,11 @@ class UserConfigurationStorage {
         .doc(uid)
         .collection('armados');
 
-    // Validar límite de 10 armados
     final snapshot = await armadosRef.get();
     if (snapshot.docs.length >= 10) {
       throw Exception('Ya tienes 10 PCs guardadas.');
     }
 
-    // Convertir componentes a JSON completo (preservando campos de Firebase)
     final componentes =
         seleccionados
             .where((c) => c != null)
@@ -33,12 +31,10 @@ class UserConfigurationStorage {
                 'precio': c.price,
                 'imagen': c.image,
                 'enlace': c.link,
-                // Extras si tenés: categoría, tienda, etc.
               },
             )
             .toList();
 
-    // Crear documento
     final data = {
       'name': configName,
       'total': total,

@@ -4,11 +4,8 @@ import 'package:ai_pc_builder_project/core/services/openai_service.dart';
 String normalizar(String texto) {
   return texto
       .toLowerCase()
-      .replaceAll(
-        RegExp(r'[^a-z0-9]+'),
-        ' ',
-      ) // Reemplaza símbolos no alfanuméricos
-      .replaceAll(RegExp(r'\s+'), ' ') // Colapsa múltiples espacios
+      .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
       .trim();
 }
 
@@ -18,8 +15,6 @@ bool coincide(String a, String b) {
 
   if (a == b) return true;
   if (a.contains(b) || b.contains(a)) return true;
-
-  // Comparación por tokens (palabras)
   final tokensA = a.split(' ').toSet();
   final tokensB = b.split(' ').toSet();
   final interseccion = tokensA.intersection(tokensB);
@@ -33,7 +28,6 @@ Future<List<Component?>> autoArmadoSugerido({
   required int budget,
   String? selectedOption,
 }) async {
-  // Paso 1: Filtrar categorías relevantes
   List<List<Component>> filteredArmado = [];
   List<int> mapeoIndicesOriginales = [];
 
@@ -48,7 +42,6 @@ Future<List<Component?>> autoArmadoSugerido({
     }
   }
 
-  // Paso 2: Construir prompt
   const limiteMaxTokens = 12000;
   const largoEstimado = 25;
 
@@ -73,7 +66,7 @@ Future<List<Component?>> autoArmadoSugerido({
       .join("\n\n");
 
   selectedOption ??= "Uso general";
-  print("tipo:$selectedOption __________________________________");
+  print("tipo:$selectedOption");
 
   final systemPrompt = """
 Sos un experto en armado de computadoras. Tu objetivo es armar la mejor PC posible con el presupuesto indicado por el usuario.
@@ -103,9 +96,6 @@ Elegí uno por categoría.
     {"role": "user", "content": userPrompt},
   ]);
 
-  print("📨 Respuesta OpenAI:\n$respuesta");
-
-  // Paso 3: Limpiar respuesta y extraer nombres
   final nombresIA =
       respuesta
           .split('\n')
@@ -119,17 +109,13 @@ Elegí uno por categoría.
           .where((line) => line.isNotEmpty)
           .toList();
 
-  // Paso 4: Mapear a los componentes
   List<Component?> seleccionados = List.filled(armado.length, null);
 
   for (int i = 0; i < filteredArmado.length; i++) {
     final categoria = filteredArmado[i];
     final indexOriginal = mapeoIndicesOriginales[i];
 
-    print("🔍 Buscando coincidencia para categoría original $indexOriginal...");
-    for (final c in categoria) {
-      print(" - ${c.name}");
-    }
+    print("Buscando coincidencia para categoría original $indexOriginal...");
 
     final match = categoria.firstWhere(
       (c) => nombresIA.any((nombreIA) => coincide(nombreIA, c.name)),
@@ -137,16 +123,13 @@ Elegí uno por categoría.
     );
 
     if (match.id == 'none' || !nombresIA.any((n) => coincide(n, match.name))) {
-      print("⚠️ Nada seleccionado para categoría original $indexOriginal");
+      print("Nada seleccionado para categoría original $indexOriginal");
       continue;
     }
 
     seleccionados[indexOriginal] = match;
-    print("✅ Seleccionado: ${match.name} → categoría original $indexOriginal");
+    print("Seleccionado: ${match.name} → categoría original $indexOriginal");
   }
-
-  print("🎯 Largo de armado original: ${armado.length}");
-  print("🎯 Largo de seleccionados: ${seleccionados.length}");
 
   return seleccionados;
 }

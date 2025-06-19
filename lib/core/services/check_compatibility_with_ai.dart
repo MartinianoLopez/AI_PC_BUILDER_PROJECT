@@ -52,7 +52,7 @@ $componentsDescription
     individualRaw = 'Todos los componentes parecen correctos.';
     general = '✅ No se detectaron problemas en el armado.';
   } else {
-    final bloques = respuesta.split(RegExp(r'\[.*\]')); 
+    final bloques = respuesta.split(RegExp(r'\[.*\]'));
     final etiquetas = RegExp(r'\[.*\]').allMatches(respuesta).toList();
 
     for (var i = 0; i < etiquetas.length; i++) {
@@ -91,7 +91,7 @@ $componentsDescription
             break;
           }
         }
-        
+
         const frasesDeseables = [
           'no es compatible con',
           'no funciona con',
@@ -108,7 +108,6 @@ $componentsDescription
           'solo funciona con ciertas',
           'puede no ser detectado',
         ];
-
 
         const frasesIndeseables = [
           'compatible con el',
@@ -129,14 +128,13 @@ $componentsDescription
           'es adecuado para',
         ];
 
-
         for (final categoria in categorias) {
           final texto = individualParsed[categoria]?.toLowerCase();
           if (texto == null) break;
 
           final contieneDeseable = frasesDeseables.any(texto.contains);
-          final contieneIndeseable = frasesIndeseables.any((frase) =>
-            texto.startsWith(frase) || texto.contains(frase)
+          final contieneIndeseable = frasesIndeseables.any(
+            (frase) => texto.startsWith(frase) || texto.contains(frase),
           );
 
           final esUtil = contieneDeseable || !contieneIndeseable;
@@ -145,9 +143,7 @@ $componentsDescription
             individualParsed[categoria] = '';
           }
         }
-        
       }
-      
     }
   }
 

@@ -104,16 +104,10 @@ class ComponentList extends StatelessWidget {
             margin: EdgeInsets.all(12),
             child: InkWell(
               onTap: () {
-                // Agregar a currentArmado
-
-                // Encuentro el index del componente en la lista
                 final index = provider.categoriasPorMarca.indexOf(category);
                 print(index);
 
-                // Cambio con el provider
                 provider.setSelected(index, component);
-
-                // Vuelvo al armador
                 context.pop();
               },
               child: ListTile(

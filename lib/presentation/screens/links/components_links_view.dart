@@ -36,8 +36,6 @@ class _ComponentsLinksState extends State<ComponentsLinks> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Links")),
-
-      //body links component
       body:
           seleccionados.isEmpty
               ? Center(child: CircularProgressIndicator(strokeWidth: 2))
@@ -170,7 +168,6 @@ class _RouteButtons extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () async {
-              // await Clipboard.setData(ClipboardData(text: links));
               showModalBottomSheet(
                 context: context,
                 shape: RoundedRectangleBorder(

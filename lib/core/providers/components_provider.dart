@@ -103,22 +103,21 @@ class ComponentsProvider with ChangeNotifier {
   }
 
   void setSelected(int index, Component component) {
-  int posicion;
+    int posicion;
 
-  if (index == 0) {
-    posicion = esAmd ? 0 : 1;
-  } else if (index == 1) {
-    posicion = esAmd ? 2 : 3;
-  } else {
-    posicion = index + 2;
+    if (index == 0) {
+      posicion = esAmd ? 0 : 1;
+    } else if (index == 1) {
+      posicion = esAmd ? 2 : 3;
+    } else {
+      posicion = index + 2;
+    }
+
+    print("Índice modificado: $posicion");
+
+    seleccionados[posicion] = component.id == 'none' ? null : component;
+    notifyListeners();
   }
-
-  print("Índice modificado: $posicion");
-
-  seleccionados[posicion] = component.id == 'none' ? null : component;
-  notifyListeners();
-}
-
 
   int getSelected(int posicion) {
     final selected = seleccionados[posicion];
@@ -126,13 +125,12 @@ class ComponentsProvider with ChangeNotifier {
 
     final componentesFiltrados = getComponents();
 
-    // Protegemos si hay un desajuste de índices
     if (posicion >= componentesFiltrados.length) return 0;
 
     final index = componentesFiltrados[posicion].indexWhere(
       (c) => c.id == selected.id,
     );
-    return index >= 0 ? index : 0; // evitar -1 porque genera un range error
+    return index >= 0 ? index : 0;
   }
 
   void setAllSelected(

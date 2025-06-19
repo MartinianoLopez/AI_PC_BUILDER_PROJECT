@@ -188,7 +188,6 @@ class MainBodyState extends State<_MainBody> {
       );
       return;
     }
-    print("home $selectedOption");
     final result = await context.push(
       '/components',
       extra: {'budget': budget, 'selectedOption': selectedOption},
