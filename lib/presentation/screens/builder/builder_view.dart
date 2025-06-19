@@ -46,23 +46,19 @@ class _ComponentsViewState extends State<ComponenetsView> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = Provider.of<ComponentsProvider>(context, listen: false);
 
-      // Restaurar AMD/Intel desde lo guardado
       provider.esAmd = widget.esAmd;
 
-      // Importar componentes solo si aún no están cargados
       await provider.importarComponentes();
 
-      // Restaurar selección de sliders si hay valores guardados
       if (widget.seleccionados != null && widget.seleccionados!.isNotEmpty) {
-        // ✅ Caso de edición: cargar armado
         provider.setAllSelected(widget.seleccionados!);
       } else {
-        // ✅ Caso de armado nuevo: limpiar selección anterior
+
         provider.setAllSelected(
           List.filled(provider.getComponents().length, null),
         );
       }
-      if(widget.selectedOption != null){ // para que no se auto arme cuando se abre un guardado
+      if(widget.selectedOption != null){
       final seleccionados = await autoArmadoSugerido(
                           armado: provider.components,
                           usarIntel: !provider.esAmd,
@@ -119,10 +115,8 @@ class _ComponentsViewState extends State<ComponenetsView> {
                 ],
               ),
               const Spacer(),
-              // Separador vertical
               Container(height: 30, width: 1, color: Colors.grey[700]),
               const Spacer(),
-              // Total
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -189,11 +183,9 @@ class BuilderView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Sliders
                 for (var i = 0; i < components.length; i++)
                   _ComponentSlider(components: components[i], posicion: i),
 
-                // Análisis general de IA
                 if (general.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(16.0),

@@ -103,10 +103,22 @@ class ComponentsProvider with ChangeNotifier {
   }
 
   void setSelected(int index, Component component) {
-    print("indice modificado: $index");
-    seleccionados[index] = component.id == 'none' ? null : component;
-    notifyListeners();
+  int posicion;
+
+  if (index == 0) {
+    posicion = esAmd ? 0 : 1;
+  } else if (index == 1) {
+    posicion = esAmd ? 2 : 3;
+  } else {
+    posicion = index + 2;
   }
+
+  print("Índice modificado: $posicion");
+
+  seleccionados[posicion] = component.id == 'none' ? null : component;
+  notifyListeners();
+}
+
 
   int getSelected(int posicion) {
     final selected = seleccionados[posicion];
@@ -127,26 +139,11 @@ class ComponentsProvider with ChangeNotifier {
     List<Component?> newSeleccionados, {
     BuildContext? context,
   }) {
-    print(" Largo nuevo: ${newSeleccionados.length}");
-    print("📦 Largo actual: ${seleccionados.length}");
-
     if (newSeleccionados.length != seleccionados.length) {
-      print("⚠️ Tamaños desalineados: adaptando lista...");
       seleccionados = List.generate(
         seleccionados.length,
         (i) => i < newSeleccionados.length ? newSeleccionados[i] : null,
       );
-
-      if (context != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "⚠️ Algunos componentes no fueron cargados correctamente.",
-            ),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
     } else {
       seleccionados = newSeleccionados;
     }
@@ -170,7 +167,6 @@ class ComponentsProvider with ChangeNotifier {
     return getComponents()[vistaIndex].indexWhere((c) => c.id == seleccion.id);
   }
 
-  // sirve para obtener los componentes sin los que no son del amd o intel seleccionado
   List<List<Component>> getComponents() {
     List<List<Component>> result = [];
     if (esAmd) {
