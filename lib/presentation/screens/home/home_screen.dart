@@ -250,11 +250,13 @@ class MainBodyState extends State<_MainBody> {
                 )
                 : const SizedBox(height: 30),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 100),
+              padding: const EdgeInsets.symmetric(horizontal: 100),
               child: TextField(
                 controller: inputBudget,
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
+                maxLength:
+                    13, // limita caracteres totales con puntos y símbolo $
                 inputFormatters: [
                   CurrencyInputFormatter(
                     leadingSymbol: '\$',
@@ -266,9 +268,11 @@ class MainBodyState extends State<_MainBody> {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Ingresa tu presupuesto',
+                  counterText: '', // Oculta contador de caracteres visual
                 ),
               ),
             ),
+
             const SizedBox(height: 30),
             // -------------------------------botones de armado-----------------------------------
             Padding(
