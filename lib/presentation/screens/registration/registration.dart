@@ -130,33 +130,44 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Widget _buildTextField(
-    String label,
-    String hint,
-    TextEditingController controller, {
-    bool obscure = false,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(color: Colors.white)),
-        const SizedBox(height: 4),
-        TextField(
-          controller: controller,
-          obscureText: obscure,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: const TextStyle(color: Colors.grey),
-            filled: true,
-            fillColor: Colors.grey[800],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-              borderSide: BorderSide.none,
-            ),
+Widget _buildTextField(
+  String label,
+  String hint,
+  TextEditingController controller, {
+  bool obscure = false,
+}) {
+  int maxLength = 60; // valor por defecto para email
+
+  if (label.toLowerCase().contains('nombre')) {
+    maxLength = 40;
+  } else if (label.toLowerCase().contains('contraseña')) {
+    maxLength = 32;
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label, style: const TextStyle(color: Colors.white)),
+      const SizedBox(height: 4),
+      TextField(
+        controller: controller,
+        obscureText: obscure,
+        maxLength: maxLength,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          counterText: '', // oculta contador visual
+          hintText: hint,
+          hintStyle: const TextStyle(color: Colors.grey),
+          filled: true,
+          fillColor: Colors.grey[800],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: BorderSide.none,
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
 }

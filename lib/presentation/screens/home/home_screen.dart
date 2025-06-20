@@ -256,7 +256,7 @@ class MainBodyState extends State<_MainBody> {
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 maxLength:
-                    13, // limita caracteres totales con puntos y símbolo $
+                    13,
                 inputFormatters: [
                   CurrencyInputFormatter(
                     leadingSymbol: '\$',
@@ -268,7 +268,7 @@ class MainBodyState extends State<_MainBody> {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Ingresa tu presupuesto',
-                  counterText: '', // Oculta contador de caracteres visual
+                  counterText: '', 
                 ),
               ),
             ),

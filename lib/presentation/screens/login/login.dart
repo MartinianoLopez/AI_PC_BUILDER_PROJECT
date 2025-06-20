@@ -87,8 +87,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 4),
                 TextField(
                   controller: emailController,
+                  maxLength: 60,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
+                    counterText: '',
                     hintText: 'mail',
                     hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
@@ -99,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 16),
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -110,9 +113,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 4),
                 TextField(
                   controller: passwordController,
+                  maxLength: 32,
                   obscureText: true,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
+                    counterText: '',
                     hintText: 'contraseña',
                     hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
@@ -123,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
