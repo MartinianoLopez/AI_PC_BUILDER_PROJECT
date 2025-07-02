@@ -136,12 +136,12 @@ Widget _buildTextField(
   TextEditingController controller, {
   bool obscure = false,
 }) {
-  int maxLength = 60; // valor por defecto para email
+  int maxLength = 30; // valor por defecto para email
 
   if (label.toLowerCase().contains('nombre')) {
-    maxLength = 40;
+    maxLength = 20;
   } else if (label.toLowerCase().contains('contraseña')) {
-    maxLength = 32;
+    maxLength = 10;
   }
 
   return Column(

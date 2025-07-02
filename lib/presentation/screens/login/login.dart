@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 4),
                 TextField(
                   controller: emailController,
-                  maxLength: 60,
+                  maxLength: 30,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     counterText: '',
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 4),
                 TextField(
                   controller: passwordController,
-                  maxLength: 32,
+                  maxLength: 10,
                   obscureText: true,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
