@@ -13,6 +13,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  String? emailError;
+  String? passwordError;
   bool _showVerifyButton = false;
 
   void _login() async {
@@ -61,6 +63,50 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Widget _buildTextField(String label, String hint, TextEditingController controller,
+      {bool obscure = false, int maxLength = 30, String? errorText}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(color: Colors.white)),
+        const SizedBox(height: 4),
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          maxLength: maxLength,
+          onChanged: (value) {
+            setState(() {
+              if (value.length >= maxLength) {
+                if (controller == emailController) {
+                  emailError = 'Se alcanzó el máximo de $maxLength caracteres';
+                } else if (controller == passwordController) {
+                  passwordError = 'Se alcanzó el máximo de $maxLength caracteres';
+                }
+              } else {
+                if (controller == emailController) emailError = null;
+                if (controller == passwordController) passwordError = null;
+              }
+            });
+          },
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            counterText: '',
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.grey),
+            filled: true,
+            fillColor: Colors.grey[800],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide.none,
+            ),
+            errorText: errorText,
+            errorStyle: const TextStyle(color: Colors.redAccent),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,58 +123,11 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Ingresar Mail:',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                TextField(
-                  controller: emailController,
-                  maxLength: 30,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    hintText: 'mail',
-                    hintStyle: const TextStyle(color: Colors.grey),
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-
+                _buildTextField('Ingresar Mail:', 'mail', emailController,
+                    maxLength: 30, errorText: emailError),
                 const SizedBox(height: 16),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Ingresar Contraseña:',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                TextField(
-                  controller: passwordController,
-                  maxLength: 10,
-                  obscureText: true,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    hintText: 'contraseña',
-                    hintStyle: const TextStyle(color: Colors.grey),
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-
+                _buildTextField('Ingresar Contraseña:', 'contraseña', passwordController,
+                    maxLength: 10, obscure: true, errorText: passwordError),
                 const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

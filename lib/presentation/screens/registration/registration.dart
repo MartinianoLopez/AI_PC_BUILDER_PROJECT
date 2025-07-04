@@ -14,8 +14,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool nameWarning = false;
+  bool emailWarning = false;
+  bool passwordWarning = false;
+  bool confirmPasswordWarning = false;
+
+  final int nameMax = 20;
+  final int emailMax = 30;
+  final int passMax = 10;
 
   void _register() async {
     final name = nameController.text.trim();
@@ -56,15 +64,58 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       if (mounted) context.go('/login');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${e.message}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.message}')),
+      );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ocurrió un error inesperado.')),
       );
     }
+  }
+
+  Widget _customField(String label, String hint, TextEditingController controller, int maxLength, bool warningFlag, Function(bool) updateWarning, {bool obscure = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(color: Colors.white)),
+        const SizedBox(height: 4),
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          onChanged: (value) {
+            if (value.length > maxLength) {
+              final trimmed = value.substring(0, maxLength);
+              controller.text = trimmed;
+              controller.selection = TextSelection.collapsed(offset: trimmed.length);
+            }
+            setState(() => updateWarning(controller.text.length >= maxLength));
+          },
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            counterText: '',
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.grey),
+            filled: true,
+            fillColor: Colors.grey[800],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        if (warningFlag)
+          const Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Text(
+              'Límite de caracteres alcanzado.',
+              style: TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ),
+        const SizedBox(height: 12),
+      ],
+    );
   }
 
   @override
@@ -84,24 +135,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 24),
-                _buildTextField('Ingresar Nombre:', 'nombre', nameController),
-                const SizedBox(height: 12),
-                _buildTextField('Ingresar Email:', 'email', emailController),
-                const SizedBox(height: 12),
-                _buildTextField(
-                  'Ingresar Contraseña:',
-                  'contraseña',
-                  passwordController,
-                  obscure: true,
-                ),
-                const SizedBox(height: 12),
-                _buildTextField(
-                  'Repetir Contraseña:',
-                  'contraseña',
-                  confirmPasswordController,
-                  obscure: true,
-                ),
-                const SizedBox(height: 24),
+                _customField('Nombre', 'nombre', nameController, nameMax, nameWarning, (v) => nameWarning = v),
+                _customField('Email', 'email', emailController, emailMax, emailWarning, (v) => emailWarning = v),
+                _customField('Contraseña', 'contraseña', passwordController, passMax, passwordWarning, (v) => passwordWarning = v, obscure: true),
+                _customField('Repetir Contraseña', 'contraseña', confirmPasswordController, passMax, confirmPasswordWarning, (v) => confirmPasswordWarning = v, obscure: true),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -129,45 +167,4 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
     );
   }
-
-Widget _buildTextField(
-  String label,
-  String hint,
-  TextEditingController controller, {
-  bool obscure = false,
-}) {
-  int maxLength = 30; // valor por defecto para email
-
-  if (label.toLowerCase().contains('nombre')) {
-    maxLength = 20;
-  } else if (label.toLowerCase().contains('contraseña')) {
-    maxLength = 10;
-  }
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(label, style: const TextStyle(color: Colors.white)),
-      const SizedBox(height: 4),
-      TextField(
-        controller: controller,
-        obscureText: obscure,
-        maxLength: maxLength,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          counterText: '', // oculta contador visual
-          hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey),
-          filled: true,
-          fillColor: Colors.grey[800],
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: BorderSide.none,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 }
